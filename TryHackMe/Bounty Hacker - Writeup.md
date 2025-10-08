@@ -2,7 +2,6 @@
 
 
 # Overview 
----
 - **Date**: 04/10/2025
 - **Category**: Web, FTP
 - **Difficulty**: Easy 
@@ -11,17 +10,13 @@
 - **Tags**: #enumeration #Brute-force #services #privesc 
 
 ## Challenge Description 
----
 >**- An easy boot-to-root machine. 
 
 ## Resolution Summary 
----
 >**We enumerated services using `Nmap`. Next we found an FTP server with Anonymous login enable, which contained information that allowed us to perform a brute-force attack on the SSH server. Finally, we escalated our privileges through misconfigured sudo permissions, involving the`tar` binary.
 
 # Information Gathering 
----
 ## Active Reconnaissance 
----
 - **As we were given an IP address, we  started by performing an `Nmap` port scan, we  scanned for services' version in order to uncover potential version-related vulnerabilities. 
 ```bash
 sudo nmap -sV 10.10.181.45
@@ -39,7 +34,6 @@ Service Info: OSs: Unix, Linux; CPE: cpe:/o:linux:linux_kernel
 
 - **Here we discovered several attack vectors to investigate, we started by the web application.** 
 ### HTTP (80)
----
 - **For starters, we  ran `GoBuster` in order to discover hidden directories. We used SecList's medium list for this task:
 ```bash
 gobuster dir -u 10.10.181.45 -w 
@@ -67,7 +61,6 @@ Spike (the one supposed to hack the system), Jet, Ed, Faye, Edward, Ein.
 ```
 
 ### FTP (21)
----
 - **Next,  we headed straight to the FTP server. We connected to it using the `ftp` command: 
 ```bash
 ftp 10.10.181.45
@@ -89,7 +82,6 @@ ftp> help
 -lin
 ```
 # Exploitation 
----
 - **Now that we were done with the enumeration step, we attempted to brute-force the SSH server with the wordlist we recovered (`locks.txt`). For this task we used  `Hydra`. 
 - **First, we made a a user list with all the usernames we found up until now. Subsequently, we proceeded by using `Hydra`: 
 ```bash
@@ -111,7 +103,6 @@ ssh lin@10.10.181.45
 	- **user.txt -> `THM{CR1M3_SyNd1C4T3}`.
 
 # Privilege Escalation 
----
 - **Our goal here was to find a way to escalate our privileges and access the final flag.
 - **For started, we tried to see which command we could possibly use with sudo:
 ```bash
@@ -143,17 +134,14 @@ cat /root/root.txt
 THM{80UN7Y_h4cK3r}
 ```
 # Trophy 
----
 **User.txt → `THM{CR1M3_SyNd1C4T3}`
 
 **Root.txt → `THM{80UN7Y_h4cK3r}`**
 
 # Remediation Summary
----
 - **Anonymous login:** It should be disable to reinforce authentication on FTP servers.  
 - **Storing passwords in cleartext:** Passwords can be safely stored using trusted password managers. 
 - **Misconfigured sudo permissions:**  Sudo usage should be restricted to essential commands only. 
 # Lessons Learned
----
 - **Any piece of information can be useful:** Saving usernames to make a wordlist was proven to be useful, as it permitted to successfully brute-force the SSH login credentials. 
 - **GTFOBins in privesc**: Checking GTFOBins allows you to transform your findings into practical exploits. 
