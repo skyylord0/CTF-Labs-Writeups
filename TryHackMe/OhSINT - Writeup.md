@@ -1,7 +1,6 @@
 # Lab Report - OhSINT
 
 ## Overview
----
 
 - **Category**: OSINT, Steganography, Google Dorking
     
@@ -15,11 +14,9 @@
 
 
 ## Challenge Description
----
 > A beginner-level OSINT challenge. Find as much information as possible from one image.
 
 ## Resolution Summary
----
 
 We are provided with a `.jpg` image. Our goal is to uncover as much information as possible from it. The first step is to check whether the image contains hidden data. By analyzing its metadata, we discover a username and GPS coordinates. These leads allow us to pivot: searching online reveals several social media accounts and posts. With Wigle.net, we trace the SSID of a wireless access point. Finally, by inspecting the source code of the target’s WordPress blog, we uncover a plaintext password.
 
