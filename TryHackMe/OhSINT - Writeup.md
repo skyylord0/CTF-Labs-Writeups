@@ -23,9 +23,7 @@ We are provided with a `.jpg` image. Our goal is to uncover as much information 
 **This demonstrates how a single file can reveal a surprisingly detailed profile when different pieces of information are connected together.**
 
 ## Information Gathering
----
 ### Passive Reconnaissance
----
 
 - First, we download and save the provided image as `OhSINT.jpg`.
     
@@ -74,7 +72,6 @@ GPS Position: 54 deg 17' 41.27" N, 2 deg 15' 1.33" W
 
 
 ### Further Investigation
----
 
 - With the email address, we also test whether it has appeared in past breaches. We check it against **HaveIBeenPwned**, which reveals that it was part of the **Gravatar 2020 breach**. While this does not provide useful credentials for us here, it’s an important reminder of how breached data can become another valuable OSINT pivot point.
     
@@ -88,7 +85,6 @@ GPS Position: 54 deg 17' 41.27" N, 2 deg 15' 1.33" W
 - This is a clear plaintext password embedded directly in the source code. In a real-world scenario, this would represent a major security issue and a critical finding.
 
 ## Trophy
----
 
 - **User profile picture** → `cat`
     
@@ -106,12 +102,10 @@ GPS Position: 54 deg 17' 41.27" N, 2 deg 15' 1.33" W
     
 
 ## Extra Mile
----
 
 Once we obtained a set of credentials, an attacker in a real-world engagement could attempt to reuse them across the user’s other platforms (password spraying or credential stuffing). While this may not work in this controlled challenge, it illustrates the danger of password reuse and how one exposed secret can compromise multiple accounts.
 
 ## Remediation Summary
----
 
 - Limit information shared on social media — even small, seemingly harmless posts can be pieced together to form a full profile.
     
@@ -120,7 +114,6 @@ Once we obtained a set of credentials, an attacker in a real-world engagement co
 - Review and clean up source code before releasing it publicly — never leave hardcoded secrets or debug information exposed.
 
 ## Lessons Learned
----
 
 - **Metadata can leak sensitive data**: EXIF fields may reveal usernames, devices, or GPS locations.
     
