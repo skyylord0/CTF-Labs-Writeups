@@ -2,7 +2,6 @@
 
 
 # Overview 
-- **Date**: 04/10/2025
 - **Category**: Web, FTP
 - **Difficulty**: Easy 
 - **Platform**: Linux
