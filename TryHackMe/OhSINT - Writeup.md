@@ -1,30 +1,22 @@
 # Lab Report - OhSINT
 
 ## Overview
-
 - **Category**: OSINT, Steganography, Google Dorking
-    
 - **Difficulty**: Easy
-    
 - **Platform**: TryHackMe
-    
 - **Link**: [https://tryhackme.com/room/ohsint](https://tryhackme.com/room/ohsint)
-    
 - **Tags**: #OSINT #Steganography
-
 
 ## Challenge Description
 > A beginner-level OSINT challenge. Find as much information as possible from one image.
 
 ## Resolution Summary
-
 We are provided with a `.jpg` image. Our goal is to uncover as much information as possible from it. The first step is to check whether the image contains hidden data. By analyzing its metadata, we discover a username and GPS coordinates. These leads allow us to pivot: searching online reveals several social media accounts and posts. With Wigle.net, we trace the SSID of a wireless access point. Finally, by inspecting the source code of the target’s WordPress blog, we uncover a plaintext password.
 
 **This demonstrates how a single file can reveal a surprisingly detailed profile when different pieces of information are connected together.**
 
 ## Information Gathering
 ### Passive Reconnaissance
-
 - First, we download and save the provided image as `OhSINT.jpg`.
     
 - A simple visual inspection of the picture does not reveal any obvious clues.
@@ -72,7 +64,6 @@ GPS Position: 54 deg 17' 41.27" N, 2 deg 15' 1.33" W
 
 
 ### Further Investigation
-
 - With the email address, we also test whether it has appeared in past breaches. We check it against **HaveIBeenPwned**, which reveals that it was part of the **Gravatar 2020 breach**. While this does not provide useful credentials for us here, it’s an important reminder of how breached data can become another valuable OSINT pivot point.
     
 - As a final step, we investigate the WordPress blog. Simply reading the content does not yield anything useful, so we switch strategies and inspect the **source code of the webpage**. Within the HTML, we find a suspicious entry:
@@ -85,7 +76,6 @@ GPS Position: 54 deg 17' 41.27" N, 2 deg 15' 1.33" W
 - This is a clear plaintext password embedded directly in the source code. In a real-world scenario, this would represent a major security issue and a critical finding.
 
 ## Trophy
-
 - **User profile picture** → `cat`
     
 - **City** → `London`
@@ -102,11 +92,9 @@ GPS Position: 54 deg 17' 41.27" N, 2 deg 15' 1.33" W
     
 
 ## Extra Mile
-
 Once we obtained a set of credentials, an attacker in a real-world engagement could attempt to reuse them across the user’s other platforms (password spraying or credential stuffing). While this may not work in this controlled challenge, it illustrates the danger of password reuse and how one exposed secret can compromise multiple accounts.
 
 ## Remediation Summary
-
 - Limit information shared on social media — even small, seemingly harmless posts can be pieced together to form a full profile.
     
 - Remove or sanitize metadata from images before publishing them online.
@@ -114,7 +102,6 @@ Once we obtained a set of credentials, an attacker in a real-world engagement co
 - Review and clean up source code before releasing it publicly — never leave hardcoded secrets or debug information exposed.
 
 ## Lessons Learned
-
 - **Metadata can leak sensitive data**: EXIF fields may reveal usernames, devices, or GPS locations.
     
 - **Pivoting is key in OSINT**: A single username can be enough to uncover multiple accounts and platforms.
