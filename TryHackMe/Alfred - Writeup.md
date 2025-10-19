@@ -159,6 +159,6 @@ migrate 668
 
 # Lessons Learned
 - **Command injections in Jenkins projects**
-- **Always try common credentials first (low hanging fruits)**
+- **Always try common credentials first (low-hanging fruit)**
 - **Using impersonation tokens**
 - **Migrating to a service with the correct permissions to stabilize the shell after token impersonation**
