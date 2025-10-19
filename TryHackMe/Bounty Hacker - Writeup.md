@@ -2,7 +2,7 @@
 
 
 # Overview 
-- **Category**: Web, FTP
+- **Category**: Web
 - **Difficulty**: Easy 
 - **Platform**: Linux
 - **Link**: https://tryhackme.com/room/cowboyhacker
