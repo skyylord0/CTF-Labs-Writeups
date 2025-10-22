@@ -31,7 +31,8 @@ PORT   STATE SERVICE VERSION
 Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 ```
 
-### HTTP (80) 
+### HTTP (80)
+---
 - **Next, we focused on the HTTP server running on port 80.** 
 - **First, we took a look at the Page Source. We saw that the web server was running a script to display the text on the homepage. (dead end)**
 
@@ -88,6 +89,5 @@ cat ./root.txt
  - **Crack the /etc/passwd hashes with JTR or Hashcat (then use credential on the SSH server).**
 
 # Remediation Summary
----
  - **For the Upload web page:** It should have a whitelist instead of a blacklist + Ban the use of particular functions (like system()).
 - **Files owned by root:** Binaries like python must not have SUID bit set.
