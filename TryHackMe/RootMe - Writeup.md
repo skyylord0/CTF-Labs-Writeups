@@ -32,7 +32,7 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 ```
 
 ### HTTP (80)
----
+
 - **Next, we focused on the HTTP server running on port 80.** 
 - **First, we took a look at the Page Source. We saw that the web server was running a script to display the text on the homepage. (dead end)**
 
@@ -40,7 +40,7 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 ```bash
 gobuster dir -u 10.10.185.141 -w /usr/share/wordlists/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt
 ```
-``
+
 - **We uncover the following directories:** 
 ```bash
 /uploads              (Status: 301) [Size: 316] [--> http://10.10.185.141/uploads/]
