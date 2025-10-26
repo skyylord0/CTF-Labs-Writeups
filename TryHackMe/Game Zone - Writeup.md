@@ -18,7 +18,7 @@
 ```bash
 sudo nmap -sV 10.10.71.155
 ```
-	- Note: Adding the `-p-` flag did not provide additional results.
+- Note: Adding the `-p-` flag did not provide additional results.
 
 - **We received the following results:**
 ```bash
