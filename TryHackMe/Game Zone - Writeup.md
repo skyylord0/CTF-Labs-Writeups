@@ -2,22 +2,18 @@
 
 
 # Overview 
----
 - **Difficulty**: Easy
 - **Platform**: Linux
 - **Link**: https://tryhackme.com/room/gamezone
 - **Tags**: #enumeration  #sqlmap #privesc 
 
 ## Challenge Description 
----
 >**Learn to hack into this machine. Understand how to use SQLMap, crack some passwords, reveal services using a reverse SSH tunnel and escalate your privileges to root!**
 
 ## Resolution Summary 
----
 **We discovered available services with an `Nmap` scan. Then, we found an HTTP web application that was vulnerable to `SQLi`. Upon logging in, we enumerated the available databases with `SQLMap` then we cracked the user's hash we found with `JTR`. Finally, we logged in the SSH server with the credentials previously found and we found a CMS (Webmin) running locally. We exposed on a local port the Webmin CMS via `Reverse SSH tunneling` and we used `Metasploit` to gain root privileges.** 
 
 # Information Gathering 
----
 - **Since we were given an IP address, we started by scanning it using `Nmap` in to find available services. We also used the `-sV` flag to potentially find version-related vulnerabilities:** 
 ```bash
 sudo nmap -sV 10.10.71.155
@@ -33,7 +29,6 @@ PORT   STATE SERVICE VERSION
 
 - **From there, we started by investigating the HTTP server.** 
 ## HTTP (80)
----
 - **Upon accessing the web application, we come across a web page with a login portal, which can be further investigated for several potential vulnerabilities.**
 
 - **First, we started by looking at the Source Page, which can sometimes bear low-hanging fruit. However, it has proven unsuccessful here. 
@@ -72,9 +67,7 @@ username=' or 1=1;--&password=dummy&x=25&y=15
 - **From now on, we moved to `sqlmap` in order to fingerprint the database.**
 
 # Exploitation 
----
 ## HTTP (80)
----
 - **Before using `sqlmap`, we made another Burp Suite request in order to have an idea on the request structure and to find valuable parameters. Here the result we got from this:**
 ```bash
 #Parameter
@@ -139,7 +132,6 @@ videogamer124    (agent47)
 
 - **From there we attempted to access the SSH server we found earlier with these credentials.**
 ## SSH (22)
----
 - **The credentials previously found allowed us to access the SSH server.** 
 - **We were immediately greeted with a flag:** 
 	- **`user.txt:649ac17b1480ac13ef1e4fa579dac95c`**
@@ -179,8 +171,7 @@ http://localhost:10000 [200 OK] Cookies[testing], HTTPServer[MiniServ/1.580], IP
 
 - **Now we tried to see if there is any exploit available on Metasploit in order to elevate our current privileges up to root.**
 # Privilege Escalation 
----
-- **We launched Metasploit and executed the following commands: 
+- **We launched Metasploit and executed the following commands:** 
 ```bash
 msfconsole 
 search webmin
@@ -194,19 +185,16 @@ run
 - **Finally, we obtained a shell with root privileges (confirmed with the `whoami` command). We got the final flag too.** 
 
 # Trophy 
----
 **User.txt → `649ac17b1480ac13ef1e4fa579dac95c`** 
 
 **Root.txt → `a4b945830144bdd71908d12d902adeee`**
 
 # Remediation Summary
----
 - **Restrict port opening/exposing privileges.**
 - **Update outdated packages and software.**
 - **Sanitize user input to prevent injection attacks.** 
 # Lessons Learned
----
-- **Use your authenticated cookies on tools such as sqlmap to avoid redirections to login portals. 
+- **Use your authenticated cookies on tools such as sqlmap to avoid redirections to login portals.** 
 - **Always try many exploits in Metasploit. Use `setg` to set options only one time (global).**
 - **Use Metasploit for privilege escalation exploits.** 
 - **Use reverse SSH tunnels to expose (hidden) services on a target machine to us locally.**
