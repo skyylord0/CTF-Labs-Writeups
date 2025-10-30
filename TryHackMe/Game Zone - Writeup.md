@@ -31,7 +31,7 @@ PORT   STATE SERVICE VERSION
 ## HTTP (80)
 - **Upon accessing the web application, we come across a web page with a login portal, which can be further investigated for several potential vulnerabilities.**
 
-- **First, we started by looking at the Source Page, which can sometimes bear low-hanging fruit. However, it has proven unsuccessful here. 
+- **First, we started by looking at the Source Page, which can sometimes bear low-hanging fruit. However, it has proven unsuccessful here.** 
 
 - **Next, we attempt a GoBuster scan in order to find potential hidden directories:**
 ```bash
