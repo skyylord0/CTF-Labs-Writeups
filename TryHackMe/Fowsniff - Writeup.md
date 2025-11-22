@@ -2,22 +2,18 @@
 
 
 # Overview 
----
 - **Difficulty**: Easy
 - **Platform**: Linux
 - **Link**: https://tryhackme.com/room/ctf
 - **Tags**: #enumeration #Brute-force #privesc 
 
 ## Challenge Description 
----
 >**Hack this machine and get the flag. There are lots of hints along the way and is perfect for beginners!**
 
 ## Resolution Summary 
----
 **We enumerated services with `Nmap`. Next we investigated the HTTP website on port 80, which revealed that the company suffered a data breach, leading to a set of leaked credentials being discovered. After that, we attempted to brute the `POP3` login page, which allowed us to recover emails indicating the SSH password (+ that a user did not change it). Finally, after gaining access to the SSH server, we obtained a root shell by editing the executable displaying the SSH banner (we had to re-log into the SHH server for the script to be executed again).** 
 
 # Information Gathering 
----
 - **To begin with, we performed an `Nmap` scan in order to find available services, we used the `-sV` flag to look for version-related vulnerabilities:**
 ```bash
 sudo nmap -sV 10.10.39.126
@@ -35,7 +31,6 @@ sudo nmap -sV 10.10.39.126
 - **We started by investing the HTTP (80) server.** 
 
 ## HTTP (80)
----
 - **From inspecting the web page we understand that the corporation suffered a data breach, which lead to employees' credentials being exposed.**  
 - **We also learned that their twitter/X account was hijacked. Hence, we searched the  twitter/X account for potential hints/leaks from the attack.** 
 
@@ -45,9 +40,7 @@ sudo nmap -sV 10.10.39.126
 - **Finally, we were also hinted to go for the POP3 (110) service. We could use those credentials to access the POP3 mail server.** 
 
 # Exploitation 
----
 ## HTTP (80)
----
 - **Before exploiting the POP3 server, we proceeded by cracking the passwords hashes.**
 - **For that we used [Hashes.com](https://hashes.com/en/decrypt/hash).** 
 
@@ -57,7 +50,6 @@ sudo nmap -sV 10.10.39.126
 
 - **Next, we moved on and went for the email server.** 
 ## POP3 (110)
----
 - **Since we had a list of credentials (emails + passwords), we attempted to brute force the POP3 login.** 
 - **For that purpose, we used the `Metasploit` framework, and more specifically the `scanner/pop3/pop3_login` module.** 
 
@@ -105,7 +97,6 @@ RETR [number]
 - **Next, we attempted to connect over SSH.**
 
 ## SSH (22)
----
 - **Using the previous credentials and the following command, we gained access to the SSH server:** 
 ```bash
 ssh baksteen@10.10.39.126 
@@ -113,8 +104,6 @@ ssh baksteen@10.10.39.126
 ```
 
 # Privilege Escalation 
----
-
 - **We used the `id` command to get our user's id, then we looked for files we were able to execute:** 
 ```bash
 id 
@@ -143,13 +132,11 @@ whoami
 
 
 # Remediation Summary
----
 - **Misconfigured File permissions**: Here there is an executable that runs as root that can be modified by our user (not privileged). 
 - **Data Leaked**: Passwords on all services should have been rotated.
 - **Communicating Passwords insecurely**: If an attacker had foothold on the POP3 server, he could have used MITM attack to intercept data (here password sent) in cleartext since POP3 service is not encrypted. 
 
 # Lessons Learned
----
 - **SSH Banner executable**: It is an important detail that can be easily missed.
 - **Threads in Metasploit modules**: Increase number of threads for faster results. 
 - **Data breaches**: It may reveal valid credentials (gain initial foothold). 
