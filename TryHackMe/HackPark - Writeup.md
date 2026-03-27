@@ -136,7 +136,7 @@ Winpeas.exe
 ```
 
 # Trophy 
-**User.txt → `759bd8af507517bcfaede78a21a73e39`  
+**User.txt → `759bd8af507517bcfaede78a21a73e39`**  
 
 **Root.txt → `7e13d97f05f7ceb9881a3eb3d78d3e72`**
 
