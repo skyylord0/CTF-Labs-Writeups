@@ -9,15 +9,12 @@
 - **Link**: https://tryhackme.com/room/skynet
 
 ## Challenge Description 
----
->**A vulnerable Terminator themed Linux machine.
+>**A vulnerable Terminator themed Linux machine.**
 
 ## Resolution Summary 
----
 **We discovered available services with an `Nmap` scan, revealing HTTP, SMB, and several mail services. We enumerated SMB shares with `enum4linux`, finding a password wordlist and a username (`milesdyson`) in the anonymous share. We brute-forced the `SquirrelMail` login with `Burp Suite Intruder`, retrieved the SMB credentials from the mailbox, and uncovered a hidden directory. Further enumeration with `Gobuster` led us to a `Cuppa CMS` administrator portal vulnerable to RFI (`CVE` not assigned), which we exploited to obtain a reverse shell. Finally, we escalated privileges to root by compiling and executing a local kernel exploit (`CVE-2017-1000112`).**
 
 # Information Gathering 
----
 - **Having the IP address of the target machine, we begun with an `Nmap` scan in order to reveal available services, and we added the `-sV` flag to scan for services' version which can reveal low-hanging fruit (version exploits).**
 ```bash
 sudo nmap -sV 10.10.10.182
@@ -38,7 +35,6 @@ Service Info: Host: SKYNET; OS: Linux; CPE: cpe:/o:linux:linux_kernel
 
 - **We begun with inspecting the web application.** 
 ## HTTP(80)
----
 - **The web page offered a single feature, which was a search bar.**
 - **We started by inspecting the Source Page, and we found that the search requests were submitted through a POST request.** 
 - **Meanwhile, we already ran in the background a `Gobuster` scan to look for hidden directories:** 
@@ -61,7 +57,6 @@ gobuster dir -u 10.10.10.182 -w /usr/share/wordlists/seclists/Discovery/Web-Cont
 
 - **But, when inspecting the `/squirrelmail` directory, we stumbled upon a login page, we also looked at the Source Page and found the software's version `SquirrelMail version 1.4.23`.** 
 ## SMB(139,445)
----
 - **We shifted our focus to the SMB service.** 
 - **We started by enumerating SMB shares with `enum4linux`:**
 ```bash
@@ -122,9 +117,9 @@ nobody
 Minimum password length: 5
 ```
 
-- **Since we got a wordlist and a username from the SMB shares, we can try and test it against the login page found previously.** 
+- **Since we got a wordlist and a username from the SMB shares, we can try and test it against the login page found previously.**
+
 ## HTTP (80)
----
 - **We came back to the login web page. We loaded `Burp Suite`, intercepted a login request, sent it to intruder, added the payload on the `secretkey` filed and used the `log1.txt` wordlist. We filtered out successful attempts by status code (302 here, we could have also proceeded by response length).** 
 
 - **We used the username we found `milesdyson` and found a matching password  
@@ -139,7 +134,6 @@ gobuster dir -u http://10.10.10.182/45kra24zxs28v3yd/ -w /usr/share/wordlists/se
 ```
 
 # Exploitation 
----
 - **We found the `/administrator` directory which was yet another login portal. We attempted to spray our previous credentials here, but it did not work.**
 
 - **We inspected the Source page and found that there is a feature to reset password but the option is not visible. We changed that by using the Developer's web tool and typed in the console `ShowPanel('forget')`.** 
@@ -171,7 +165,6 @@ python3 -m http.server 8000
 ```
 
 # Privilege Escalation 
----
 - **Once we had our shell, we attempted to upgrade it using the following commands:** 
 ```bash
 python3 -c 'import pty; pty.spawn("/bin/bash")'
@@ -205,7 +198,7 @@ gcc 43418.c -o pwn
 
 # Trophy 
 ---
-**User.txt → `7ce5c2109a40f958099283600a9ae807` ** 
+**User.txt → `7ce5c2109a40f958099283600a9ae807`** 
 
 **Root.txt → `3f0372db24753accc7179a282cd6a949`**
 
