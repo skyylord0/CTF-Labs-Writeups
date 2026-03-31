@@ -196,7 +196,6 @@ gcc 43418.c -o pwn
 	- root.txt: **`3f0372db24753accc7179a282cd6a949`**.
 
 # Trophy 
----
 **User.txt → `7ce5c2109a40f958099283600a9ae807`** 
 
 **Root.txt → `3f0372db24753accc7179a282cd6a949`**
