@@ -2,7 +2,6 @@
 
 
 # Overview 
----
 - **Category**: Web
 - **Difficulty**: Easy
 - **Platform**: Linux
