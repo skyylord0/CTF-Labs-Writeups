@@ -121,7 +121,7 @@ Minimum password length: 5
 ## HTTP (80)
 - **We came back to the login web page. We loaded `Burp Suite`, intercepted a login request, sent it to intruder, added the payload on the `secretkey` filed and used the `log1.txt` wordlist. We filtered out successful attempts by status code (302 here, we could have also proceeded by response length).** 
 
-- **We used the username we found `milesdyson` and found a matching password  
+- **We used the username we found `milesdyson` and found a matching password**  
 	- password: **`cyborg007haloterminator`.**
 
 - **We navigated through the emails and found the SMB share's `milesdyson` password, which allowed (by the same means employed for `log1.txt` file) to find a flag:**
