@@ -2,21 +2,17 @@
 
 
 # Overview 
----
 - **Difficulty**: Hard 
 - **Platform**: Linux
 - **Link**: https://tryhackme.com/room/dailybugle
 
 ## Challenge Description 
----
 >- **Compromise a Joomla CMS account via SQLi, practice cracking hashes and escalate your privileges by taking advantage of yum.**
 
 ## Resolution Summary 
----
 **We discovered available services with an `Nmap` scan, revealing SSH, HTTP, and MySQL. We identified a `Joomla 3.7.0` CMS on the web application, which was vulnerable to SQLi (`CVE-2017-8917`). We exploited it with a Python script to extract a password hash, which we cracked with `JTR`. With the recovered credentials, we logged into the Joomla admin panel and injected a PHP reverse shell into a template file. In the web application directory, we found a `configuration.php` file containing credentials that allowed us to SSH as `jjameson`. Finally, we escalated to root by abusing a `sudo` misconfiguration on `yum`, using a malicious plugin via `GTFOBins`.**
 
 # Information Gathering 
----
 - **We began by scanning the target's network with `Nmap` in order to find online services, we also added the `-sV` flag to find low-hanging fruits (version's vulnerabilities):**
 ```bash
 sudo nmap -sV 10.80.181.52
@@ -34,7 +30,6 @@ PORT     STATE SERVICE VERSION
 - **To begin with, we decided to focus on the web application on port 80.**
 
 ## HTTP (80)
----
 - **Upon inspecting the web application, we noticed that there is a login form available, we decided to launch `Burp Suite` in order to perform some manual testing.**
 - **On the background, we launched Gobuster in order to find any hidden directory:**
 ```bash
@@ -65,7 +60,6 @@ joomscan -u http://10.80.181.52
 - **Next, we found that this version was vulnerable to SQLi on [exploit-db](https://www.exploit-db.com/), `CVE-2017-8917`**
 
 # Exploitation 
----
 - **We used the following [python script](https://github.com/teranpeterson/Joomblah) in order to exploit the SQLi vulnerability.** 
 ```bash
 python3 joomblah.py http://10.81.142.103
@@ -100,7 +94,6 @@ http://10.81.142.103/administrator/index.php?option=com_templates&view=template&
 ```
 
 # Privilege Escalation 
----
 - **To begin with, we stabilized our current shell with:**
 ```bash 
 python -c 'import pty; pty.spawn("/bin/bash")'
@@ -160,13 +153,11 @@ whoami
 ```
 
 # Trophy 
----
 **User.txt → `27a260fe3cba712cfdedb1c86d80442e`** 
 
 **Root.txt → `eec3d53292b1821868266858d7fa6f79`**
 
 # Lessons Learned
----
 - Every time you find a password, always **spray it** to every username !!! 
 - Look for **public exploits** on **GitHub**. 
 - Discovered **yum**, new privilege escalation vector: a root-package manager. 
