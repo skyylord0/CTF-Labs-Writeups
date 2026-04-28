@@ -2,24 +2,19 @@
 
 
 # Overview 
----
 - **Category**: Web
 - **Difficulty**: Easy
 - **Platform**: Linux
 - **Link**: https://tryhackme.com/room/lookup
 
 ## Challenge Description 
----
-> **A beginner boot-to-root machine. 
+> **A beginner boot-to-root machine.** 
 
 ## Resolution Summary 
----
 **We discovered available services with an `Nmap` scan, revealing an SSH server and an HTTP web application. We identified a login page and exploited a difference in server responses to enumerate valid usernames with `ffuf`, then brute-forced the password for user `jose`. Upon logging in, we were redirected to a subdomain running `elFinder`, which was vulnerable to a command injection exploit (`CVE-2019-9194`), giving us an initial foothold via `Metasploit`. For privilege escalation, we abused a SUID binary (`pwm`) that relied on the `id` command by hijacking the `PATH` variable with a fake `id` script, recovering a password list that we sprayed against SSH with `Hydra` to log in as `think`. Finally, we leveraged a `sudo` misconfiguration on `/usr/bin/look` to read the root flag directly.**
 
 # Information Gathering 
----
 ## Active Reconnaissance
----
 - **As we were given an IP address, we started by performing an Nmap scan in order to discover running services on the target.**
 - **We used the `-sV` flag to uncover the services' versions, which could allow us to discover version-related vulnerabilities.** 
 ```bash
@@ -37,7 +32,6 @@ nmap -sV 10.10.40.250
 - **Hence we started by investigating the web application on port 80.**
 
 ### HTTP server (80)
----
 - **When accessing the website, we were greeted by a login page, which could be tested for injections attacks.** 
 
 - **We started by looking at the Source Page, we found that the form action value is `login.php`, which indicates to us the directory (`/login.php`) we need to target when fuzzing.**
@@ -55,9 +49,7 @@ sublist3r -d lookup.thm
 
 - **We did not get any results either, then we focused on the login form.**
 # Exploitation 
----
 ### HTTP server (80)
----
 - **As we have found a login page, we tried and see how the requests behave by using Burp Suite.** 
 - **After sending the request to Repeater, we find that if you provide the correct username, the `Content-length` value changes (74 for invalid username and password, 62 for invalid password only).**
 
@@ -98,7 +90,6 @@ set vhost files.lookup.thm
 
 - **Then we `run` the exploit, we end up getting a meterpreter shell on the target.**
 # Privilege Escalation 
----
 - **Now we are looking to increase our privileges after gaining initial foothold on the target system.** 
 - **First, we check if the Kernel version is vulnerable, we find that it is indeed. We use DirtyPipe exploit but it do not work.** 
 
@@ -142,23 +133,20 @@ LFILE=/root/root.txt
 sudo look '' "$LFILE"
 ```
 # Trophy 
----
 **User.txt → `38375fb4dd8baa2b2039ac03d92b820e`** 
 
 **Root.txt → `5a285a9f257e45c68bb6c9f9f57d18e8`**
 
 # Extra Mile 
 ---
-> **- A good habit would be to upgrade your shell whenever it is possible.** 
-> **- We can try and crack the hashes in /etc/shadow.**
-> **- We ended up not using the admin username on the web page (maybe it was only to discover the content-length change when the username already existed).**
+- **A good habit would be to upgrade your shell whenever it is possible.** 
+- **We can try and crack the hashes in /etc/shadow.**
+- **We ended up not using the admin username on the web page (maybe it was only to discover the content-length change when the username already existed).**
 
 # Remediation Summary
----
- - **Verbose error messages tend to give a lot of hints, they should be as generic as possible.** 
+- **Verbose error messages tend to give a lot of hints, they should be as generic as possible.** 
 - **The /usr/bin/look binary is dangerous, it should not be available to run with sudo for any user.** 
 # Lessons Learned
----
 - **When using `ffuf`, it should target the form action (which you can find on the Source Page).** 
 - **Always search if the software used is vulnerable (DB exploit).**  
 - **When working with subdomains and Metasploit, you might need to change the vhost option (and set it to the vulnerable subdomain).** 
