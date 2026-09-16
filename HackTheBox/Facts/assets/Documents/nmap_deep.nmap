@@ -1,0 +1,22 @@
+# Nmap 7.98 scan initiated Sat Apr 25 09:41:34 2026 as: /usr/lib/nmap/nmap -p22,80 -oA nmap_deep -sV -sC -O 10.129.40.176
+Nmap scan report for 10.129.40.176
+Host is up (0.11s latency).
+
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 9.9p1 Ubuntu 3ubuntu3.2 (Ubuntu Linux; protocol 2.0)
+| ssh-hostkey: 
+|   256 4d:d7:b2:8c:d4:df:57:9c:a4:2f:df:c6:e3:01:29:89 (ECDSA)
+|_  256 a3:ad:6b:2f:4a:bf:6f:48:ac:81:b9:45:3f:de:fb:87 (ED25519)
+80/tcp open  http    nginx 1.26.3 (Ubuntu)
+|_http-server-header: nginx/1.26.3 (Ubuntu)
+|_http-title: Did not follow redirect to http://facts.htb/
+Warning: OSScan results may be unreliable because we could not find at least 1 open and 1 closed port
+Device type: general purpose
+Running: Linux 4.X|5.X
+OS CPE: cpe:/o:linux:linux_kernel:4 cpe:/o:linux:linux_kernel:5
+OS details: Linux 4.15 - 5.19, Linux 5.0 - 5.14
+Network Distance: 2 hops
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+OS and Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+# Nmap done at Sat Apr 25 09:41:47 2026 -- 1 IP address (1 host up) scanned in 13.60 seconds

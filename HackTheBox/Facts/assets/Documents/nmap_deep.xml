@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.98 scan initiated Sat Apr 25 09:41:34 2026 as: /usr/lib/nmap/nmap -p22,80 -oA nmap_deep -sV -sC -O 10.129.40.176 -->
+<nmaprun scanner="nmap" args="/usr/lib/nmap/nmap -p22,80 -oA nmap_deep -sV -sC -O 10.129.40.176" start="1777124494" startstr="Sat Apr 25 09:41:34 2026" version="7.98" xmloutputversion="1.05">
+<scaninfo type="syn" protocol="tcp" numservices="2" services="22,80"/>
+<verbose level="0"/>
+<debugging level="0"/>
+<hosthint><status state="up" reason="unknown-response" reason_ttl="0"/>
+<address addr="10.129.40.176" addrtype="ipv4"/>
+<hostnames>
+</hostnames>
+</hosthint>
+<host starttime="1777124495" endtime="1777124507"><status state="up" reason="echo-reply" reason_ttl="63"/>
+<address addr="10.129.40.176" addrtype="ipv4"/>
+<hostnames>
+</hostnames>
+<ports><port protocol="tcp" portid="22"><state state="open" reason="syn-ack" reason_ttl="63"/><service name="ssh" product="OpenSSH" version="9.9p1 Ubuntu 3ubuntu3.2" extrainfo="Ubuntu Linux; protocol 2.0" ostype="Linux" method="probed" conf="10"><cpe>cpe:/a:openbsd:openssh:9.9p1</cpe><cpe>cpe:/o:linux:linux_kernel</cpe></service><script id="ssh-hostkey" output="&#xa;  256 4d:d7:b2:8c:d4:df:57:9c:a4:2f:df:c6:e3:01:29:89 (ECDSA)&#xa;  256 a3:ad:6b:2f:4a:bf:6f:48:ac:81:b9:45:3f:de:fb:87 (ED25519)"><table>
+<elem key="type">ecdsa-sha2-nistp256</elem>
+<elem key="key">AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBNYjzL0v+zbXt5Zvuhd63ZMVGK/8TRBsYpIitcmtFPexgvOxbFiv6VCm9ZzRBGKf0uoNaj69WYzveCNEWxdQUww=</elem>
+<elem key="bits">256</elem>
+<elem key="fingerprint">4dd7b28cd4df579ca42fdfc6e3012989</elem>
+</table>
+<table>
+<elem key="type">ssh-ed25519</elem>
+<elem key="key">AAAAC3NzaC1lZDI1NTE5AAAAIPCNb2NXAGnDBofpLTCGLMyF/N6Xe5LIri/onyTBifIK</elem>
+<elem key="bits">256</elem>
+<elem key="fingerprint">a3ad6b2f4abf6f48ac81b9453fdefb87</elem>
+</table>
+</script></port>
+<port protocol="tcp" portid="80"><state state="open" reason="syn-ack" reason_ttl="63"/><service name="http" product="nginx" version="1.26.3" extrainfo="Ubuntu" ostype="Linux" method="probed" conf="10"><cpe>cpe:/a:igor_sysoev:nginx:1.26.3</cpe><cpe>cpe:/o:linux:linux_kernel</cpe></service><script id="http-server-header" output="nginx/1.26.3 (Ubuntu)"><elem>nginx/1.26.3 (Ubuntu)</elem>
+</script><script id="http-title" output="Did not follow redirect to http://facts.htb/"><elem key="redirect_url">http://facts.htb/</elem>
+</script></port>
+</ports>
+<os><portused state="open" proto="tcp" portid="22"/>
+<portused state="closed" proto="udp" portid="39506"/>
+<osmatch name="Linux 4.15 - 5.19" accuracy="100" line="70534">
+<osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="4.X" accuracy="100"><cpe>cpe:/o:linux:linux_kernel:4</cpe></osclass>
+<osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="5.X" accuracy="100"><cpe>cpe:/o:linux:linux_kernel:5</cpe></osclass>
+</osmatch>
+<osmatch name="Linux 5.0 - 5.14" accuracy="100" line="71713">
+<osclass type="general purpose" vendor="Linux" osfamily="Linux" osgen="5.X" accuracy="100"><cpe>cpe:/o:linux:linux_kernel:5</cpe></osclass>
+</osmatch>
+</os>
+<uptime seconds="1260456" lastboot="Fri Apr 10 19:34:11 2026"/>
+<distance value="2"/>
+<tcpsequence index="259" difficulty="Good luck!" values="E1E94F8C,BAFBD6C1,49E575FB,8E00A7B5,F69791EB,C5532B7A"/>
+<ipidsequence class="All zeros" values="0,0,0,0,0,0"/>
+<tcptssequence class="1000HZ" values="4B20F0F4,4B20F105,4B20F16F,4B20F1EC,4B20F2A4,4B20F2A4"/>
+<times srtt="113613" rttvar="82269" to="442689"/>
+</host>
+<runstats><finished time="1777124507" timestr="Sat Apr 25 09:41:47 2026" summary="Nmap done at Sat Apr 25 09:41:47 2026; 1 IP address (1 host up) scanned in 13.60 seconds" elapsed="13.60" exit="success"/><hosts up="1" down="0" total="1"/>
+</runstats>
+</nmaprun>
