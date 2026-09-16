@@ -2,17 +2,14 @@
 
 
 # Overview 
----
 - **Difficulty**: Medium 
 - **Platform**: Linux
 - **Link**: https://tryhackme.com/room/mrrobot
 
 ## Resolution Summary 
----
 **We discovered available services with an `Nmap` scan, revealing SSH and two HTTP servers running a `WordPress` CMS. We enumerated hidden directories with `GoBuster`, uncovering a wordlist and the first flag in `/robots.txt`. We identified a valid username (`elliot`) through differing error messages on the login page, then brute-forced the password with `Hydra`. With admin access, we spawned a `Meterpreter` shell via `Metasploit`. We then cracked an MD5 hash found on the system to switch to the `robot` user and retrieve the second flag. Finally, we escalated to root by abusing the `SUID` bit set on `nmap`, spawning a root shell via its interactive mode.**
 
 # Information Gathering 
----
 - **First and foremost, we performed an `Nmap` scan in order to map the target network's architecture, we also added the `-sV` flag in order to scan for software's version:**
 ```bash 
 sudo nmap -sV 10.10.228.255 
@@ -30,7 +27,6 @@ Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
 - **From there, we started by investigating the two available web servers.**
 
 ## HTTP (80)
----
 - **We uncovered a page that hosted many content related to the TV show, and it was accessible from a customized command line that only allowed a couple of tailor-made commands.** 
 
 - **Upon inspecting the Source Page, we suspected that the website was built with the WordPress CMS.** 
@@ -62,11 +58,9 @@ curl http://10.10.228.255/fsocity.dic > wordlist.txt
 +Enumerate the WP CMS with `wpscan` ? 
 
 ## HTTP (443)
----
 - **It seemed that it was a dead end since we were redirected to the previous web page.** 
 - **Hence, we proceeded with the exploitation stage.** 
 # Exploitation 
----
 - **For starters, the WordPress version we found earlier is vulnerable to RCE (when authenticated), here is the [link](https://www.exploit-db.com/exploits/50255) to the exploit.**
 - **However, we held into this for the moment and we tried to work our way around the login page.** 
 
@@ -119,7 +113,6 @@ run
 
 - **We finally obtained a `Meterpreter` shell on the target.**
 # Privilege Escalation 
----
 - **Once we got a shell, we were not able to read the second flag located at `/home/robot`. However, we had access to the `password.raw-md5` file which stored the `robot` user password.**
 
 - **Hence, we cracked the hash using [hashes.com](https://hashes.com/en/decrypt/hash) then we attempted to change user, and we succeeded:** 
@@ -187,18 +180,15 @@ nmap --interctive
 - **Finally, we were able to access the last flag:** 
 	- `04787ddef27c3dee1ee161b21670b4e4`
 # Trophy 
----
 **User.txt → `822c73956184f694993bede3eb39f959`** 
 
 **Root.txt → `04787ddef27c3dee1ee161b21670b4e4`**
 
 # Remediation Summary
----
 - **Avoid explicit error message**: It can allow for user enumeration.
 - **Restrict SUID bit permissions on binaries**: binaries like `nmap` can prove to be dangerous when exploited with SUID bit set. 
 
 # Lessons Learned
----
 - **WP Admin panel**:
 	- Use the `unix/webapp/wp_admin_shell_upload` to spawn a shell on the target.
 	- Set WPCHECK to false if WP is not detected on the target. 
