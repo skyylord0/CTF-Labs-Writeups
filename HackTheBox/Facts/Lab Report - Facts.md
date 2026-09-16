@@ -2,18 +2,15 @@
 
 
 # Overview 
----
 - **Difficulty**: Easy
 - **Platform**: Linux
 - **Link**: https://app.hackthebox.com/machines/Facts
 - **Tags**: #CVE #SudoMisconfig  #Web 
 
 ## Resolution Summary 
----
 **We started by enumerating open ports with `Nmap`. Next, we found a web application running on HTTP port 80, which had an admin login page and allowed users to register, gaining access to an admin panel. The website was running `Camaleon CMS v2.9.0`, which was vulnerable to `CVE-2026-1776` (arbitrary file read), allowing us to gain access to the SSH server by reading a user's SSH private key and cracking its passphrase with JTR. Finally, we elevated our privileges by exploiting a sudo misconfiguration, which allowed us to use the `facter` binary with `sudo`. Therefore, we retrieved both flags and concluded the testing.**
 
 # Information Gathering 
----
 - **To begin with, we performed an Nmap scan in order to find available services. We added the `-Pn` flag since the target host was blocking ping probes:** 
 ```bash
 sudo nmap 10.129.38.219 -oA nmap_init 
@@ -43,7 +40,6 @@ sudo nano /etc/hosts
 - **After that, we decided to shift our focus to the web application on port 80.** 
 
 ## HTTP (80)
----
 - **In the first place, we started by performing some fingerprinting in order to get an overview of the technologies used in the web server.** 
 
 - **We used `whatweb` for that purpose:** 
@@ -72,9 +68,7 @@ gobuster dir -u http://facts.htb -w /usr/share/seclists/Discovery/Web-Content/co
 	- **`/admin`: provides access to a login page.**
 
 # Exploitation 
----
 ## HTTP (80)
----
 - **Once accessing the login portal at `http://facts.htb/admin`, we found that we were able to create a user:**
 <p align="center">
   <img src="./assets/Screenshots/04-register-user.png" />
@@ -200,7 +194,6 @@ sudo facter --custom-dir=/tmp/exploit read
 **Root.txt → `e8bead554ef46826978cbdbaa7d7fa74`**
 
 # Remediation Summary
----
 - **Update software to their latest version.** 
 	- **Here, the CMS was vulnerable to a fairly recent vulnerability (2026).**
 - **Restrict read permissions of the web user.**
@@ -208,7 +201,6 @@ sudo facter --custom-dir=/tmp/exploit read
 - **Restrict the use of sudo by at least requesting the user's password.**
 
 # Lessons Learned
----
 - **Here, even with sudo rights, we could not run any script (ex: shell), since the executed code was only running in a pseudo-terminal (because of the `use_pty` flag, which blocks the spawning of interactive shells).**
 - **Always take time to understand tools/binaries/frameworks you discover/are not familiar with.** 
 	- **This helps with correctly enumerating such elements and understanding their purpose.**
