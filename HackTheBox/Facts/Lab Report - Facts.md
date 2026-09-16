@@ -187,8 +187,8 @@ sudo facter --custom-dir=/tmp/exploit read
  <p align="center">
   <img src="./assets/Screenshots/14-root-flag.png" />
 </p>
-# Trophy 
----
+
+# Trophy
 **User.txt → `e412150f497ac31ab57aa8e616ff4b74`** 
 
 **Root.txt → `e8bead554ef46826978cbdbaa7d7fa74`**
