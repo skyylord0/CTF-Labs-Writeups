@@ -2,17 +2,14 @@
 
 
 # Overview 
----
 - **Difficulty**: Easy
 - **Platform**: Windows - Active Directory
 - **Link**: https://www.hacksmarter.org/courses/3d1021e5-39bf-41a6-8120-0d9b3e9c5431
 
 ## Resolution Summary 
----
 Starting with valid credentials, we were able to access a custom SMB share that had a password-protected file, which we cracked and found the default password set for users initially. After enumerating users and spraying the default password, we gained access to the `a.harris` who could ultimately reset the password of the `svc_ca` account, which could enroll in a specific certificate template. The template was vulnerable to ESC1, leading to administrator access over the DC. 
 
 # Walkthrough 
----
 - To begin with, we performed an Nmap scan on the target, in order to find available services, their versions as well as running default NSE scripts for richer enumeration output: 
 ```bash
 sudo nmap 10.1.194.155 -p- --open -sCV
@@ -172,11 +169,9 @@ cat C:\Users\Administrator\Desktop\root.txt
 </p>
 
 # Trophy 
----
 **User.txt → `46fa545e76f2b279ca97bd2c7f39ba12`**  
 
 **Root.txt → `7fbb500e363e81691681f6880ed38631`**
 
 # Lessons Learned
----
 - When enumerating vulnerable certificate templates, using any domain user's credentials vs using `svc_ca` credentials led to different output (the `WELCOME-CA` template was not highlighted as vulnerable in the first case, but was in the latter).
