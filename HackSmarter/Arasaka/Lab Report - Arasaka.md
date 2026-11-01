@@ -2,17 +2,14 @@
 
 
 # Overview 
----
 - **Difficulty**: Easy
 - **Platform**: Windows - Active Directory
 - **Link**: https://www.hacksmarter.org/courses/f618f837-3060-40a3-81cf-31beeaadf37a
 
 ## Resolution Summary 
----
 Starting from an assumed breach scenario, we found a kerberoastable user (`alt.svc`) that we abused in order to recover its cleartext password. Afterwards, we respectively exploited `GenericAll` and `GenericWrite` on users `Yorinobu` and `Soulkiller.svc` (password reset and targeted kerberoast). After recovering the cleartext password of the `Soulkiller.svc` user, we abused a certificate template vulnerable to ESC1 in order to gain access as the `the_emperor` user, which was a member of the Domain Admins group.
 
 # Walkthrough
----
 - To begin with, we start by performing an Nmap scan in order to find available services, as well as their version and other useful information with default NSE scripts: 
 ```bash
 sudo nmap 10.1.219.19 -p- --open -sCV
@@ -137,9 +134,7 @@ cat C:\Users\Administrator\Desktop\root.txt
 </p>
 
 # Trophy 
----
 **Root.txt → `fcf1dd0f08d1068a2f151fd2ec5ecf05`**
 
 # Lessons Learned
----
 - If an Anti Virus solution is enabled on the target, attempting to gain shell access via `psexec.py` might fail, as it relies on uploading an executable that may get deleted by the AV, failing to provide us with shell access. 
