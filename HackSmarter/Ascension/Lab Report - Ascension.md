@@ -2,16 +2,14 @@
 
 
 # Overview 
----
 - **Difficulty**: Easy
 - **Platform**: Linux
 - **Link**: https://www.hacksmarter.org/courses/191a82d2-26de-437d-8a5a-0f9192481fbc
 
 ## Resolution Summary 
----
 We mounted locally a remote directory which contained a passphrase-protected SSH private key. We cracked its passphrase and gained access as `user1`. Next, we identified a cronjob running as `user2` which executed a script in `/tmp` (world-writable). We gained a shell access as `user2` after placing a reverse shell script with the same filename in that directory. Afterwards, we discovered a WordPress install in the web root of the HTTP server, allowing us to retrieve credentials from the `wp-config.php` file for access to the local DB. In there we recovered credentials for `user3`. We also retrieved a password list from the FTP server using anonymous login, which we then sprayed on the `ftpuser` username to recover its credentials. Finally, we abused the `cap_setuid` on a python3 interpreter binary to gain a root shell.  
+
 # Walkthrough
----
 - First of all, we performed an Nmap scan in order to discover available services, their versions and additional information using NSE scripts. We discovered several available, among which we count FTP, SSH, NFS and HTTP: 
 ```bash
 sudo nmap 10.1.247.241 -p- --open -sCV
@@ -209,5 +207,4 @@ cat /opt/root/flag6
 </p>
 
 # Trophy 
----
 **Root Flag → `RkxBRzZ7c2RmanVkaGZzODIzNGtqbmJvaG5kamZ9`**
