@@ -2,17 +2,14 @@
 
 
 # Overview 
----
 - **Difficulty**: Medium
 - **Platform**: Windows - Active Directory
 - **Link**: https://www.hacksmarter.org/courses/63bc86e1-3ab3-43be-b32e-62a676e6dee7
 
 ## Resolution Summary 
----
 Starting without credentials, we enumerated SMB shares anonymously and abused a writable share by uploading a malicious LNK file, allowing us to steal a user's hash, which we cracked to gain a foothold on the domain. Next, we abused `GenericAll` another user's password and we consequently gained a shell access to the DC. After discovering an MSSQL server running locally, we exposed it with Ligolo-ng and abused our sysadmin privileges to execute OS commands. Seeing that we had `SeImpersonatePrivilege` enabled, we compromised a Domain Admin user by changing its password. 
 
 # Walkthrough
----
 - Since we did not have any credentials at hand, we first attempted to see if anonymous share listing was enabled. We discovered that we could read and write anonymously to a specific share:
 ```bash
 nxc smb 10.0.17.211 -u 'admin' -p '' --shares
@@ -202,7 +199,6 @@ cat C:\Users\Administrator\Desktop\root.txt
 </p>
 
 # Trophy 
----
 **User.txt → `bWFkZV9pdF90aGlzX2Zhcgo=`** 
 
 **Root.txt → `YWxsIGFib3V0IHRoYXQgcm9vdCwgYm91dCB0aGF0IHJvb3QsIEpVU1QgREEK`**
