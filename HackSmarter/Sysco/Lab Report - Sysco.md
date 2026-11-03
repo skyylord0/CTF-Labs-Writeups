@@ -2,17 +2,14 @@
 
 
 # Overview 
----
 - **Difficulty**: Medium
 - **Platform**: Windows - Active Directory
 - **Link**: https://www.hacksmarter.org/courses/18876893-1afd-443f-b448-0681b13e86ec
 
 ## Resolution Summary 
----
 We started by extracting a list of names (team members) from the web application running on port 80. We crafted a list of usernames and validate them against the DC, leading to us find an ASREPRoastable user (`jack.dowland`) that allowed us to gain a credentialed access to the domain. Afterwards, we logged in on  `Roundcube` and retrieved an attachment which contained a password hash for `lainey.moore` , which we cracked. Having new credentials, we could RDP into the target and find credentials for `greg.shields` in an LNK file. Finally, we abused `GenericAll` over the `Default Domain Policy` GPO to add a newly created user to the Domain Admins group, leading to a full compromise of the AD domain. 
 
 # Walkthrough
----
 - To begin with, we scanned the target's ports with Nmap to discover available services on the host. We found a web application running on port 80: 
 ```bash
 sudo nmap 10.1.25.72 -p- -vv --open
@@ -177,12 +174,10 @@ cat C:\Users\Administrator\Desktop\root.txt
 </p>
 
 # Trophy 
----
 **User.txt → `5efd12c8bc80b6882fa86f5698b14dc6`**
 
 **Root.txt → `e7f850e7c14aeae7ecbb900fb6afbba1`**
 
 # Lessons Learned
----
 - Although `kerbrute` may provide the hash for ASREProastable users, it may not be valid (won't be crackable).
 	- Always use other tools, such as Netexec or Impacket. 
