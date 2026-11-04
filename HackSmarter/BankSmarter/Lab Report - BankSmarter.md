@@ -2,17 +2,14 @@
 
 
 # Overview 
----
 - **Difficulty**: Medium
 - **Platform**: Linux
 - **Link**: https://www.hacksmarter.org/courses/c90bd016-24a5-4776-9f35-819062c51f6f
 
 ## Resolution Summary 
----
 After finding that SNMP was running, we discovered exposed SSH credentials when querying OIDs. Next, a cron job was running as `scott.weiland` and was using a script in our home directory. We deleted it and replaced it with a reverse shell, allowing us to gain another access. Furthermore, we discovered and used a socket connection that was running a session as `ronnie.stone`. Finally, we gained root access via a SUID binary which called a script that relied on our (writable) PATH variable to run `python3` (PATH abuse). 
 
 # Walkthrough
----
 - We started by performing an Nmap scan in order to discover any entry points to the target. While we only found SSH available when scanning TCP port, we found that SNMP was available when scanning UDP ports:
 ```bash
 sudo nmap 10.1.63.33 -p- -vv
@@ -190,13 +187,11 @@ cat /root/root.txt
 </p>
 
 # Trophy 
----
 **User.txt → `R29vZCBKb2IgRW51bWVyYXRpbmdscyAtbGEhIEtlZXAgaXQgdXAK`** 
 
 **Root.txt → `VGhhbmtzIGZvciBkb2luZyB0aGUgbWFjaGluZSwgaXQgZG9lcyBtZWFuIGEgbG90LCBsZXQgbWUga25vdyB3aGF0IHlvdSB0aGluawo=`**
 
 # Lessons Learned
----
 - In SSH login, usernames are case-sensitive.
 - When having complete ownership of a directory, but not having write permission over a file in that directory:
 	- We cannot directly edit it.
