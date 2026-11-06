@@ -2,17 +2,14 @@
 
 
 # Overview 
----
 - **Difficulty**: Easy
 - **Platform**: Windows
 - **Link**: https://www.hacksmarter.org/courses/530c3910-9b4d-4983-949c-126a8587b4ed
 
 ## Resolution Summary 
----
 Using our provided credentials, we could gain an RDP session on the target. Next, we recovered the administrator's cleartext credentials from PowerShell history. Finally, we used `runas` to launch an admin cmd prompt and retrieve the flag.
 
-# Information Gathering 
----
+# Walkthrough 
 - First, we enumerated open ports with Nmap to find which services were available to us. We found that RDP was available:
 ```bash
 sudo nmap 10.1.30.196 -p- -vv
@@ -60,5 +57,4 @@ cat C:\Users\Administrator\Desktop\root.txt
 </p>
 
 # Trophy 
----
 **Root.txt → `3835538c50e819f392144ae9ef125496`**
