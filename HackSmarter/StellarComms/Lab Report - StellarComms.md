@@ -2,17 +2,14 @@
 
 
 # Overview 
----
 - **Difficulty**: Medium
 - **Platform**: Windows - Active Directory
 - **Link**: https://www.hacksmarter.org/courses/e0f57d12-2c23-4d6a-8c55-b85010526e52
 
 ## Resolution Summary 
----
 Having only a username (`junior.analyst`) at our disposition, we investigated an FTP server which accepted anonymous login, allowing us to retrieve documents that mentioned an internal web portal and the default password (`Galaxy2026!`). Using our given username and the default password, we gained access to the domain. Afterwards, we abused `WriteOwner` over the  `StellarOps-Control` group to gain `GenericAll` on the group and then add ourselves to it. Next, we abused `ForceChangePassword` on the `ops.controller` user, which permitted us to gain a shell access on the DC. Furthermore, we exfiltrated the Firefox profile of the `ops.controller` user and decrypted the stored credentials, allowing us to compromise the `æstro.researcher` user. With that user, we abused `WriteDacl` over the `eng.payload` user to grant us `GenericAll` over him then reset its password. Following that, we could use `eng.payload` to read the GMSA password of the `SATLINK-SERVICE$` machine, allowing us to recover its NT hash. Finally, using these newly discovered credentials we were able to perform a DCSync and retrieve the domain admin's NTLM hash, successfully compromising the domain.
 
 # Walkthrough
----
 - To begin with, we performed an Nmap scan to reveal open ports on the target. We found that an FTP and HTTP servers were available: 
 ```bash
 sudo nmap 10.1.49.52 -p- -vv
@@ -198,13 +195,11 @@ cat C:\Users\Administrator\Desktop\root.txt
 </p>
 
 # Trophy 
----
 **User.txt → `FLAG[Stellar_Link_Orbit_442km]`** 
 
 **Root.txt → `FLAG[OrbitMaster_Access_Granted]`**
 
 # Lessons Learned
----
 - Always use the `binary` command on FTP servers to switch to binary mode for file transfers.
 	- Using ASCII mode may result in corrupted files.
 
