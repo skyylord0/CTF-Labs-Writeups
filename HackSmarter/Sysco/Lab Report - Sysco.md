@@ -7,7 +7,7 @@
 - **Link**: https://www.hacksmarter.org/courses/18876893-1afd-443f-b448-0681b13e86ec
 
 ## Resolution Summary 
-We started by extracting a list of names (team members) from the web application running on port 80. We crafted a list of usernames and validate them against the DC, leading to us find an ASREPRoastable user (`jack.dowland`) that allowed us to gain a credentialed access to the domain. Afterwards, we logged in on  `Roundcube` and retrieved an attachment which contained a password hash for `lainey.moore` , which we cracked. Having new credentials, we could RDP into the target and find credentials for `greg.shields` in an LNK file. Finally, we abused `GenericAll` over the `Default Domain Policy` GPO to add a newly created user to the Domain Admins group, leading to a full compromise of the AD domain. 
+We started by extracting a list of names (team members) from the web application running on port 80. We crafted a list of usernames and validated them against the DC, leading to us find an ASREPRoastable user (`jack.dowland`) that allowed us to gain a credentialed access to the domain. Afterwards, we logged in on  `Roundcube` and retrieved an attachment which contained a password hash for `lainey.moore` , which we cracked. Having new credentials, we could RDP into the target and find credentials for `greg.shields` in an LNK file. Finally, we abused `GenericAll` over the `Default Domain Policy` GPO to add a newly created user to the Domain Admins group, leading to a full compromise of the AD domain. 
 
 # Walkthrough
 - To begin with, we scanned the target's ports with Nmap to discover available services on the host. We found a web application running on port 80: 
