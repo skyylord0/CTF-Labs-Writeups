@@ -2,17 +2,14 @@
 
 
 # Overview 
----
 - **Difficulty**: Medium
 - **Platform**: Windows - Active Directory
 - **Link**: https://www.hacksmarter.org/courses/bd8a0659-8afe-40b4-9e95-0fe932850773
 
 ## Resolution Summary 
----
 We began by enumerating the web application on port 80, allowing us to find an executable that we downloaded and from which we extracted a base64 encoded MD5 hash, which we cracked. After building a list of usernames using names from the web application and validating them, we sprayed the previously found password and gained access as `karl.hackermann`. Next, we abused `GenericWrite` over `tom.reboot` to perform a targeted kerberoasting attacking, allowing us to recover the user's cleartext password. Afterwards, we abused `ForceChangePassword` over `robert.graef`, which allowed us to also abuse `ForceChangePassword` over `jan.tresor`. Following that, we abused `AddMember` over the RDP group to add `jan.tresor` there and gain RDP access, allowing us to recover deleted emails with valuable information, such as credentials for `daniel.hoffmann`. After that, we enabled the `svc.services` account, abused `ForceChangePassword` over `webadmin` and recovered a password-protected backup zip file, which we could access using a password on the web application. Accessing the backup archive allowed us to recover credentials for the `svc.services` user, which was ultimately used to exploit ESC4 on the `Vuln-ESC4` template, allowing us to make it vulnerable to ESC1, gain a certificate as administrator, then authenticate with it and use an LDAP shell to create and add a new user to the Domain Admins group, successfully compromising the AD domain.
 
 # Walkthrough 
----
 - First of all, we ran an Nmap scan in order to find open ports on the target. We discovered a web application running on port 80:
 ```bash
 sudo nmap 10.1.78.184 -p- -vv
@@ -294,14 +291,13 @@ cat C:\Users\Administrator\Desktop\root.txt
 <p align="center">
   <img src="./assets/Screenshots/39.png" />
 </p>
+
 # Trophy 
----
 **User.txt → `FLAG{SafeDeposit_Unlock_404Finance_Trust2025}`**  
 
 **Root.txt → `FLAG[404Finance_ROOT_Domination]`**
 
 # Lessons Learned
----
 - When attempting to authenticate with a certificate (`.pfx`), if we get the following error: 
 ```bash
 [-] Got error while trying to request TGT: Kerberos SessionError: KDC_ERR_PADATA_TYPE_NOSUPP(KDC has no support for padata type)
