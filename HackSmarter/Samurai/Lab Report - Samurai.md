@@ -42,6 +42,7 @@ http://10.1.29.64/api/v1/users?public=true
 <p align="center">
   <img src="./assets/Screenshots/4.png" />
 </p>
+
 ```bash
 http://10.1.29.64/api/index.php/v1/config/application?public=true
 ```
