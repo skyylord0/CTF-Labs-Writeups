@@ -2,17 +2,14 @@
 
 
 # Overview 
----
 - **Difficulty**: Easy
 - **Platform**: Linux
 - **Link**: https://www.hacksmarter.org/courses/3b3f3073-3242-4aee-9bcd-0fb058ce4e13
 
 ## Resolution Summary 
----
 We uncovered a web application running Joomla version 4.2.5, which was vulnerable to CVE-2023-23752, allowing us to retrieve valid credentials for the administrator login panel. Having access to the dashboard, we gained RCE by replacing a PHP template file with a PHP reverse shell. Finally, we gained a root shell by exploiting an insecure command invocation inside a custom SUID binary (PATH abuse).
 
 # Walkthrough 
----
 - To begin with, we performed an Nmap scan in order to find available services on the target. We found that an SSH server and e web application (HTTP) were running: 
 ```bash
 sudo nmap 10.1.29.64 -p- -vv
@@ -164,13 +161,11 @@ cat /var/www/user.txt && cat /root/root.txt
 </p>
 
 # Trophy 
----
 **User.txt → `flag{Tachi_794–1185}`**  
 
 **Root.txt → `flag{Katana_1603–1868}`**
 
 # Lessons Learned
----
 - You will most likely not be able to use PATH abuse and sudo, as `sudo` relies on its own PATH variable called `secure_path`.
 
 - Don't forget the `-p` flag when using `/bin/bash` to not drop privileges.
