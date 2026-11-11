@@ -3,18 +3,15 @@
 
 
 # Overview 
----
 - **Difficulty**: Intermediate
 - **Community Rating**: Intermediate
 - **Platform**: Linux
 - **Link**: https://portal.offsec.com/machine/payday-164/overview/details
 
 ## Resolution Summary 
----
 After identifying `CS-Cart` running on port 80, we logged in to the admin portal using the `admin:admin` credentials. Afterwards, we gained a foothold on the target by uploading a malicious PHP file (`.phtml`) under the `Template editor` tab and accessing it via its URL. Next, we authenticated as `patrick` using the `patrick:patrick` credentials. Finally, we had unrestricted `sudo` usage, allowing us to escalate to a root shell. 
 
 # Information Gathering 
----
 - To begin with, we ran an Nmap scan with the aim of discovering available services, as well as their versions. We discovered a web application running on port 80 running `CS-Cart`:
 ```bash
 sudo nmap 192.168.146.39 -p- -sCV
@@ -51,7 +48,6 @@ http://192.168.146.39/admin.php?target=upgrade_center
 
 
 # Exploitation 
----
 - We could exploit the vulnerability as follows: 
 - First, we created simple PHP webshell named `webshell.phtlm`: 
 ```bash
@@ -94,7 +90,6 @@ http://192.168.146.39/skins/php-reverse-shell.phtml
 
 
 # Privilege Escalation 
----
 - First, we identified another user (`patrick`) which could be used for lateral movement. We could authenticate as him using the following credentials: `patrick:patrick`. 
 	- This is a recurrent pattern in Offsec-style labs, here it can be relevant since we found `admin:admin` to be valid earlier.
 ```bash
@@ -137,13 +132,11 @@ cat /root/proof.txt && id && ip a
 
 
 # Trophy 
----
 **User.txt → `8d1021cde52feb7f22a16ac603e0145c`**  
 
 **Root.txt → `fd819d14e0a4af492d5fdb2aece05c69`**
 
 # Lessons Learned
----
 - It can be helpful to look up available exploits for e specific framework/technology, before even finding its version.
 	- It can provide insight on a possible attack path and also be a quick win (in case the application is vulnerable and we cannot find its version) .
 
