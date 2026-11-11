@@ -3,18 +3,15 @@
 
 
 # Overview 
----
 - **Difficulty**: Intermediate
 - **Community Rating**: Intermediate
 - **Platform**: Linux
 - **Link**: https://portal.offsec.com/machine/pelican-440/overview/details
 
 ## Resolution Summary 
----
 We found an Exhibitor (Zookeeper)  instance running that was vulnerable to CVE-2019-5029, an RCE exploit (no authentication) which allowed us to gain a foothold on the target. Next, we could run `gcore` with sudo, which we used to dump the core of a process running `/usr/bin/password-store` and  to recover the root user's password.
 
 # Information Gathering 
----
 - First of all, we performed an Nmap scan in order to reveal open ports on the target, as well as the services' version and further information about them. We noticed that Zookeeper and Exhibitor were running on the target: 
 ```bash
 sudo nmap 192.168.187.98 -p- -sCV
@@ -32,7 +29,6 @@ http://192.168.187.98:8080/exhibitor/v1/ui/index.html
 </p>
 
 # Exploitation 
----
 - A PoC for the exploit was available [here](https://www.exploit-db.com/exploits/48654). It could also be found locally at: 
 ```bash
 /usr/share/exploitdb/exploits/java/webapps/48654.txt
@@ -93,7 +89,6 @@ curl -X POST -d @data.json http://192.168.187.98:8080/exhibitor/v1/config/set
 </p>
 
 # Privilege Escalation 
----
 - Upon listing commands that we were able to run with `sudo`, we found that the `/usr/bin/gcore` binary was available:
 ```bash
 sudo -l
@@ -130,11 +125,9 @@ cat /root/proof.txt && id && ip a
 </p>
 
 # Trophy 
----
-**User.txt → `295bbd132524dce5ec30a26601158b34`  
+**User.txt → `295bbd132524dce5ec30a26601158b34`**  
 
 **Root.txt → `420b5abb32a091964df58d405d9e5cae`**
 
 # Lessons Learned
----
 - Dumping process running `/usr/bin/password-store` can allow us to retrieve credentials. 
