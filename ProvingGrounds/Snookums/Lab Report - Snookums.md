@@ -2,18 +2,15 @@
 
 
 # Overview 
----
 - **Difficulty**: Intermediate
 - **Community Rating**: Intermediate
 - **Platform**: Linux
 - **Link**: https://portal.offsec.com/machine/snookums-294/overview/details
 
 ## Resolution Summary 
----
 After discovering a PHP web application running on port 80, we fuzzed for files and parameters and discovered that the `img` parameter under the `image.php` file was vulnerable to RFI. Thus, we gained RCE via RFI by remotely including a PHP reverse shell. Next, we found DB credentials inside the `db.php` file in the application's web root, which allowed us to recover the credentials for the `michael` user. Finally, we leveraged `michael`'s write permission over `/etc/passwd` to add a user with root privileges and gain root access to the target.
 
 # Information Gathering 
----
 - First off, we performed an Nmap scan to find available services and their versions. We noticed a web application running on port 80: 
 ```bash
 sudo nmap 192.168.146.58 -p- -sCV
@@ -51,7 +48,6 @@ http://192.168.146.58/image.php?img=test
 
 
 # Exploitation 
----
 - Therefore, we attempted to exploit File Inclusion. We confirmed that the web application was vulnerable by including `/etc/passwd`.
 	- We also found a valid user: `michael`
 ```bash
@@ -124,7 +120,6 @@ stty raw -echo; fg
 ```
 
 # Privilege Escalation 
----
 - After looking up the web root directory, we found the `db.php` file (which we also found earlier when fuzzing for `.php` files), which held MySQL DB credentials for the root user:
 ```bash
 cat /var/www/html/db.php
@@ -196,13 +191,11 @@ cat /root/proof.txt && id && ip a
 
 
 # Trophy 
----
 **User.txt → `476bb0c644e836bfd1ba778f122f7e38`**  
 
 **Root.txt → `8e7cf7526b0bb5130dcfdaef32d2712e`**
 
 # Lessons Learned
----
 - Keep thoroughly enumerating.
 	- Don't overlook file (with extension) fuzzing
 	- Same for GET (and POST eventually) parameter fuzzing.
