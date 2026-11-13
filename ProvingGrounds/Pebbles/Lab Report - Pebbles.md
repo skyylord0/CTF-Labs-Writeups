@@ -2,18 +2,15 @@
 
 
 # Overview 
----
 - **Difficulty**: Easy
 - **Community Rating**: Hard
 - **Platform**: Linux
 - **Link**: https://portal.offsec.com/machine/pebbles-304/overview/details
 
 ## Resolution Summary 
----
 Fuzzing for web directories on a web application running on port 80 revealed a ZoneMinder v 1.29.0 install, which was vulnerable to Unauthenticated RCE (CVE-2023-26035), allowing us to gain a shell access to the target as `www-data`. Noticing that `mysqld` was running as root, we recovered the root DB credentials in `zm.conf` and gained a shell by abusing UDF.
 
 # Information Gathering 
----
 - To begin with, we enumerated available services as well as their versions using Nmap. We discovered a web application running on port 80.
 ```bash
 sudo nmap 192.168.146.52 -p- -sCV
@@ -44,7 +41,6 @@ http://192.168.146.52/zm/index.php
 
 
 # Exploitation 
----
 - Using the following [PoC](https://github.com/Henryisnotavailable/ZoneMinder-1.29.0-RCE-Stored-XSS), we could obtain a foothold (reverse shell) on the target.
 - First, we set up a listener: 
 ```bash
@@ -71,7 +67,6 @@ id
 
 
 # Privilege Escalation 
----
 - After finder the configuration file for `ZoneMinder`, we discovered the MySQL root user credentials: 
 ```bash
 cat /etc/zm/zm.conf
@@ -188,9 +183,7 @@ cat /root/proof.txt && id && ip a
 </p>
 
 # Trophy 
----
 **Proof.txt → `197301e0e1ba01015296eea00d301c2a`**
 
 # Lessons Learned
----
 - When `/usr/sbin/mysqld` runs as root and we have root access to the DB, we can abuse UDF to gain a root shell.
