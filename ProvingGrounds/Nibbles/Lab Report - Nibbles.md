@@ -2,18 +2,15 @@
 
 
 # Overview 
----
 - **Difficulty**: Intermediate
 - **Community Rating**: Intermediate
 - **Platform**: Linux
 - **Link**: https://portal.offsec.com/machine/nibbles-209/overview/details
 
 ## Resolution Summary 
----
 An Nmap scan revealed an exposed PostgreSQL service, which we could access using the default `postgres:postgres` credentials. Having noticed that we were `Superuser`, we abused this privilege to achieve OS command execution and ultimately gain a foothold on the target using a reverse shell. Finally, we escalated to root by abusing the `find` binary, which had the SUID bit set.
 
 # Information Gathering 
----
 - First of all, we performed an Nmap scan in order to reveal online services and their versions. We noticed that a PostgreSQL Instance was available externally:
 ```bash
 sudo nmap 192.168.146.47 -p- -sCV
@@ -33,7 +30,6 @@ psql -h 192.168.146.47 -U postgres -p 5437
 </p>
 
 # Exploitation 
----
 - Knowing that, we confirmed that we could execute OS commands on the target by running the `id` command:
 ```postgresql
 DROP TABLE IF EXISTS cmd_exec;
@@ -72,7 +68,6 @@ cat /home/wilson/local.txt && id && ip a
 
 
 # Privilege Escalation 
----
 - After listing binaries that have SUID bit set, we discovered that `find` was one of them: 
 ```bash
 find / -perm -4000 -exec ls -ldb {} \; 2>/dev/null
@@ -94,12 +89,10 @@ cat /root/proof.txt && id && ip a
 
 
 # Trophy 
----
-**User.txt → `ed4f12ffd5e52f043c6ea84b04593dcd`**  
+**local.txt → `ed4f12ffd5e52f043c6ea84b04593dcd`**  
 
-**Root.txt → `3ad8c2504673560f977b6ff28b45a750`**
+**proof.txt → `3ad8c2504673560f977b6ff28b45a750`**
 
 # Lessons Learned
----
 - To specify the port when using `psql`, try the `-p` flag.
 	- Much relevant in our case here since without specifying the said port, the connection attempt would hang (likely because it attempts to reach 5432, instead of 5437 in our case).
