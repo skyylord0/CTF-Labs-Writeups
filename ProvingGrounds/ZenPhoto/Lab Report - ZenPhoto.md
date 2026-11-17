@@ -114,9 +114,9 @@ cat /root/proof.txt && id && ip a
 
 
 # Trophy 
-**User.txt → `c10920d05aeb4ad3462a9332aa5390ed`**  
+**local.txt → `c10920d05aeb4ad3462a9332aa5390ed`**  
 
-**Root.txt → `4418e1989aaa6dd133cd2b0f01416ffc`**
+**proof.txt → `4418e1989aaa6dd133cd2b0f01416ffc`**
 
 # Lessons Learned
 - Although Kernel exploits are not the first things you would test for, keep in mind that it may simply come down to it sometimes.
