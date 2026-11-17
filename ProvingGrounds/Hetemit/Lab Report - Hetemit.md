@@ -2,7 +2,6 @@
 
 
 # Overview 
----
 - **Difficulty**: Intermediate
 - **Community Rating**: Very Hard
 - **Platform**: Linux
@@ -12,11 +11,9 @@
 	- [Hacktricks - Bypass Python sandboxes](https://hacktricks.wiki/en/generic-methodologies-and-resources/python/bypass-python-sandboxes/index.html).
 
 ## Resolution Summary 
----
 We discovered a python web application on port 50000 that exposed an endpoint which evaluated input passed to the `code` POST parameter. We abused it to perform OS command execution and gained a foothold on the target. Afterwards, we discovered that we could restart the target via `sudo /sbin/reboot`, as well as that we had write access to a `systemd` configuration file `pythonapp.service`. We abused it by making `root` the user who starts the python application on port 50000 then we rebooted the machine. Finally, we gained a root shell by following the same steps for the foothold.   
 
 # Information Gathering 
----
 - First off, we performed an Nmap scan with the aim of revealing available services, as well as their versions. We noticed that a python web application was running on port 50000:
 ```bash
 sudo nmap 192.168.153.117 -p- -sCV
@@ -60,7 +57,6 @@ code=1234
 
 
 # Exploitation 
----
 - Since it was a python application, we attempted to see if our input was being evaluated, and we discovered that it was the case by using `7*7` as input: 
 ```HTTP
 POST /verify HTTP/1.1
@@ -140,7 +136,6 @@ cat /home/cmeeks/local.txt && id && ip a
 
 
 # Privilege Escalation 
----
 - Upon getting a shell on the target, we noticed that we could reboot the target using `sudo`:
 ```bash
 sudo -l
@@ -208,13 +203,11 @@ cat /root/proof.txt && id && ip a
 
 
 # Trophy 
----
 **User.txt → `db30c16d5cded0b891fc075fec732fca`**  
 
 **Root.txt → `06fc54575d87a78fadb734bd9efd1d03`**
 
 # Lessons Learned
----
 - When looking for writable files, it is important to inspect both `world-writable` files and files that your current user can write to.
 	- In our case, the `pythonapp.service` was not world-writable, but it was writable by us.
 - Here we attempted to gain a root shell in several ways: 
