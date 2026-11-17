@@ -2,7 +2,6 @@
 
 
 # Overview 
----
 - **Difficulty**: Intermediate
 - **Community Rating**: Intermediate
 - **Platform**: Linux
@@ -12,11 +11,9 @@
 	- [Dirty Cow PoC (CVE-2016-5195)](https://www.exploit-db.com/exploits/40839).
 
 ## Resolution Summary 
----
 A vulnerable ZenPhoto install (v1.4.1.4) running on a web application under `/test` on port 80 allows for unauthenticated RCE (`CVE-2011-4825`), leading to a foothold on the target. Afterwards, the target host was vulnerable to the Dirty Cow kernel exploit (CVE-2016-5195), allowing us to gain root access on the machine. 
 
 # Information Gathering 
----
 - To begin with, we scanned the target's ports in order to discover available services and their versions. We noticed a web application running on port 80:
 ```bash
 sudo nmap 192.168.108.41 -p- -sCV
@@ -45,7 +42,6 @@ view-source:http://192.168.108.41/test/
 
 
 # Exploitation 
----
 - A quick internet research revealed that `ZenPhoto` version `1.4.1.4` was vulnerable to RCE ([CVE-2011-4825](https://www.exploit-db.com/exploits/18083)). 
 - We set up a listener: 
 ```bash
@@ -71,7 +67,6 @@ cat /home/local.txt && id && ip a
 
 
 # Privilege Escalation 
----
 - Using `linpeas.sh`, we noticed that the target was likely vulnerable to `DirtyCow 2`, a Kernel exploit.
 - First, we set up a python HTTP server to serve our `linpeas` binary:
 ```bash
@@ -119,11 +114,9 @@ cat /root/proof.txt && id && ip a
 
 
 # Trophy 
----
 **User.txt → `c10920d05aeb4ad3462a9332aa5390ed`**  
 
 **Root.txt → `4418e1989aaa6dd133cd2b0f01416ffc`**
 
 # Lessons Learned
----
 - Although Kernel exploits are not the first things you would test for, keep in mind that it may simply come down to it sometimes.
