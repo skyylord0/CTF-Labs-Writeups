@@ -154,6 +154,7 @@ ssh trivia@10.129.41.10 -i id_ed25519
 <p align="center">
   <img src="./assets/Screenshots/10-ssh-access.png" />
 </p>
+
 # Privilege Escalation 
 ---
 - **For privilege escalation, we began by listing binaries we were able to run with `sudo`:**
