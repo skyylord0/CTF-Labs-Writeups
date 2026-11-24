@@ -2,7 +2,6 @@
 
 
 # Overview 
----
 - **Difficulty**: Intermediate
 - **Community Rating**: Hard
 - **Platform**: Linux
@@ -11,11 +10,9 @@
 	- [Simple File List WP Plugin Unauthenticated RCE - PoC (CVE-2020-36847)](https://github.com/0xgh057r3c0n/CVE-2025-34085).
 
 ## Resolution Summary 
----
 A WordPress website had the `Simple File List` plugin installed (`v4.2.2`), which was vulnerable to unauthenticated RCE, allowing us to gain a shell on the target. Afterwards, we abused root-level file write via the `dosbox` binary which had its SUID bit set, allowing us to grant full `sudo` privileges to our current user and gain a root shell.
 
 # Information Gathering 
----
 - First of all, we ran an Nmap scan scan with the aim of uncovering available services and their versions on the target. We noticed that a WordPress website was available on port 80: 
 ```bash
 sudo nmap 192.168.108.105 -p- -sCV
@@ -35,7 +32,6 @@ sudo nmap 192.168.108.105 -p- -sCV
 
 
 # Exploitation 
----
 - Using this PoC, we could achieve RCE on the target: 
 ```bash
 python3 CVE-2025-34085.py -u http://192.168.108.105/ --cmd "id"
@@ -70,7 +66,6 @@ cat /home/commander/local.txt && id && ip a
 
 
 # Privilege Escalation 
----
 - Upon enumerating binaries with SUID bit set, we found that `dosbox` was one of them, which could be abused for root-level file write: 
 ```bash
 find / -perm -4000 -exec ls -ldb {} \; 2>/dev/null
@@ -101,7 +96,6 @@ cat /root/proof.txt && id && ip a
 
 
 # Trophy 
----
 **User.txt → `6717326b6fa22637da54f79f02a73138`**  
 
 **Root.txt → `06440a415b07606fc8f9f155e1ff741f`**
