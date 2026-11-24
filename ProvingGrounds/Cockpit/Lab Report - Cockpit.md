@@ -2,18 +2,15 @@
 
 
 # Overview 
----
 - **Difficulty**: Intermediate
 - **Community Rating**: Intermediate
 - **Platform**: Linux
 - **Link**: https://portal.offsec.com/machine/cockpit-49474/overview/details
 
 ## Resolution Summary 
----
 A custom login portal on a web application on port 80 was vulnerable to SQLi, allowing us to gain access to an admin dashboard and to retrieves credentials. Using the recovered credentials, we could log into the Cockpit instance on port 9090, allowing us to gain access to a terminal console, leading to a foothold on the target. Finally, we abused a wildcard in the tar command - which we could run as sudo - to grant ourselves unrestricted sudo privileges, thus gaining a root shell immediately afterwards.
 
 # Information Gathering 
----
 - First off, we performed an Nmap scan in order to reveal exposed services as well as their versions. We discovered a web application running on port 80: 
 ```bash
 sudo nmap 192.168.196.10 -p- -sCV
@@ -67,7 +64,6 @@ username=%27&password=admin
 
 
 # Exploitation 
----
 - Upon inspecting the MySQL error, we noticed that it was flawed since it seemed  to rely on the following query: 
 ```sql
 Select * from tablename where username like '%[username]%' and password like '%[password]%'   
@@ -166,7 +162,6 @@ cat /home/james/local.txt && id && ip a
 
 
 # Privilege Escalation 
----
 - After listing commands we could run with sudo, we noticed that we could run tar on any files (wildcard): 
 ```bash
 sudo -l
@@ -209,10 +204,9 @@ cat /root/proof.txt && id && ip a
 
 
 # Trophy 
----
-**User.txt → `077b726da0523f5694fa860627ab51e8`**  
+**local.txt → `077b726da0523f5694fa860627ab51e8`**  
 
-**Root.txt → `54f7b79114fb451938212440ad2ed68b`**
+**proof.txt → `54f7b79114fb451938212440ad2ed68b`**
 
 # Lessons Learned
 ---
